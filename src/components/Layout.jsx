@@ -56,11 +56,21 @@ function Layout({ children }) {
   const handleLogout = async () => {
     setIsLoggingOut(true);
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
     setTimeout(() => {
       navigate('/login');
       setIsLoggingOut(false);
     }, 500);
   };
+
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const userInitials = user.full_name
+    ? user.full_name
+        .split(' ')
+        .map((n) => n[0])
+        .join('')
+        .toUpperCase()
+    : 'LA';
 
   const navigationItems = [
     { path: '/', icon: Home, label: 'Dashboard' },
@@ -145,7 +155,7 @@ function Layout({ children }) {
                     title={!sidebarOpen ? item.label : undefined}
                   >
                     <Icon
-                      className={`${sidebarOpen ? 'w-5 h-5' : 'w-6 h-6'} ${
+                      className={`${sidebarOpen ? 'w-5 h-5' : 'w-4 h-6'} ${
                         isActive ? 'text-white' : 'text-gray-600'
                       }`}
                     />
@@ -230,12 +240,16 @@ function Layout({ children }) {
             <div className='flex items-center space-x-2 sm:space-x-4'>
               <div className='text-right hidden sm:block'>
                 <p className='text-sm font-medium text-gray-900'>
-                  Library Admin
+                  {user.full_name || 'Library Admin'}
                 </p>
-                <p className='text-xs text-gray-500'>Administrator</p>
+                <p className='text-xs text-gray-500 capitalize'>
+                  {user.role || 'Administrator'}
+                </p>
               </div>
               <div className='w-8 h-8 bg-black rounded-full flex items-center justify-center'>
-                <span className='text-white text-sm font-medium'>LA</span>
+                <span className='text-white text-sm font-medium'>
+                  {userInitials}
+                </span>
               </div>
             </div>
           </div>
@@ -243,7 +257,7 @@ function Layout({ children }) {
 
         {/* Page Content */}
         <main className='flex-1 overflow-auto bg-gray-50 p-4 sm:p-6'>
-          <div className='max-w-7xl mx-auto'>{children}</div>
+          <div className='max-w-7xl'>{children}</div>
         </main>
       </div>
     </div>

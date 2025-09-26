@@ -45,6 +45,7 @@ function Login() {
     const token = localStorage.getItem('token');
     if (token) navigate('/');
   }, [navigate]);
+  // ... existing code ...
 
   const handleSubmit = async () => {
     setIsLoading(true);
@@ -60,10 +61,16 @@ function Login() {
       const data = await res.json();
       if (data.token) {
         localStorage.setItem('token', data.token);
+        // Fetch and store user data
+        const userRes = await fetch('http://localhost:5000/users/me', {
+          headers: { Authorization: `Bearer ${data.token}` },
+        });
+        const user = await userRes.json();
+        localStorage.setItem('user', JSON.stringify(user));
         setFormData({ full_name: '', email: '', password: '', role: '' });
         setIsRegister(true);
+        toast.success('Login successful!');
         navigate('/');
-        toast.success('Authentication successful!');
       } else if (data.message) {
         setFormData({ full_name: '', email: '', password: '', role: '' });
         setIsRegister(false);
@@ -76,6 +83,7 @@ function Login() {
       setIsLoading(false);
     }
   };
+
 
   const handleLogout = () => {
     localStorage.removeItem('token');
