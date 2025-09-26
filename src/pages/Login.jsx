@@ -46,14 +46,13 @@ function Login() {
     const token = localStorage.getItem('token');
     if (token) navigate('/');
   }, [navigate]);
-  // ... existing code ...
 
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
-     const url = isRegister
+      const url = isRegister
         ? `${API_BASE_URL}/register`
-        : `${API_BASE_URL}/login`; 
+        : `${API_BASE_URL}/login`;
       const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -65,12 +64,17 @@ function Login() {
         const userRes = await fetch(`${API_BASE_URL}/users/me`, {
           headers: { Authorization: `Bearer ${data.token}` },
         });
-        const user = await userRes.json();
-        localStorage.setItem('user', JSON.stringify(user));
-        setFormData({ full_name: '', email: '', password: '', role: '' });
-        setIsRegister(true);
-        toast.success('Login successful!');
-        navigate('/');
+        if (userRes.ok) {
+          const user = await userRes.json();
+          localStorage.setItem('user', JSON.stringify(user));
+          setFormData({ full_name: '', email: '', password: '', role: '' });
+          setIsRegister(true);
+          toast.success('Login successful!');
+          navigate('/'); 
+        } else {
+          toast.error('Failed to fetch user data. Please try again.');
+          localStorage.removeItem('token');
+        }
       } else if (data.message) {
         setFormData({ full_name: '', email: '', password: '', role: '' });
         setIsRegister(false);
@@ -83,7 +87,6 @@ function Login() {
       setIsLoading(false);
     }
   };
-
 
   const handleLogout = () => {
     localStorage.removeItem('token');

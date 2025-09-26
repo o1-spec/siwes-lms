@@ -13,6 +13,7 @@ import Reports from './pages/Reports';
 import Login from './pages/Login';
 import { ToastProvider } from './components/ui/toast';
 import Profile from './pages/Profile';
+import NotFound from './pages/NotFound';
 
 function App() {
   const token = localStorage.getItem('token');
@@ -71,6 +72,7 @@ function App() {
                 </Layout>
               }
             />
+            <Route path='*' element={<NotFound />} />
           </>
         ) : (
           <Route path='*' element={<Navigate to='/login' />} />
