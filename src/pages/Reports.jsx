@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useEffect, useState } from 'react';
 import {
   Table,
@@ -8,6 +9,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { toast } from 'sonner';
 
 function Reports() {
   const [reports, setReports] = useState({
@@ -17,22 +19,34 @@ function Reports() {
   });
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    fetch('http://localhost:5000/reports/most-borrowed', {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => res.json())
-      .then((data) => setReports((prev) => ({ ...prev, mostBorrowed: data })));
-    fetch('http://localhost:5000/reports/active-users', {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => res.json())
-      .then((data) => setReports((prev) => ({ ...prev, activeUsers: data })));
-    fetch('http://localhost:5000/reports/overdue', {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => res.json())
-      .then((data) => setReports((prev) => ({ ...prev, overdue: data })));
+    const fetchReports = async () => {
+      const token = localStorage.getItem('token');
+      try {
+        const [mostBorrowedRes, activeUsersRes, overdueRes] = await Promise.all(
+          [
+            fetch('http://localhost:5000/reports/most-borrowed', {
+              headers: { Authorization: `Bearer ${token}` },
+            }),
+            fetch('http://localhost:5000/reports/active-users', {
+              headers: { Authorization: `Bearer ${token}` },
+            }),
+            fetch('http://localhost:5000/reports/overdue', {
+              headers: { Authorization: `Bearer ${token}` },
+            }),
+          ]
+        );
+
+        const mostBorrowed = await mostBorrowedRes.json();
+        const activeUsers = await activeUsersRes.json();
+        const overdue = await overdueRes.json();
+
+        setReports({ mostBorrowed, activeUsers, overdue });
+      } catch (error) {
+        toast.error('Failed to load reports.'); 
+      }
+    };
+
+    fetchReports();
   }, []);
 
   return (

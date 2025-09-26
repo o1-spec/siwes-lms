@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useEffect, useState } from 'react';
 import {
   Table,
@@ -28,6 +29,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { toast } from 'sonner';
 
 function Users() {
   const [users, setUsers] = useState([]);
@@ -54,30 +56,36 @@ function Users() {
 
   const handleAddUser = async () => {
     const token = localStorage.getItem('token');
-    if (isEditing) {
-      await fetch(`http://localhost:5000/users/${currentUserId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(formData),
-      });
-    } else {
-      await fetch('http://localhost:5000/users', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(formData),
-      });
+    try {
+      if (isEditing) {
+        await fetch(`http://localhost:5000/users/${currentUserId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(formData),
+        });
+        toast.success('User updated successfully!'); 
+      } else {
+        await fetch('http://localhost:5000/users', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(formData),
+        });
+        toast.success('User added successfully!'); 
+      }
+      setIsDialogOpen(false);
+      setIsEditing(false);
+      setCurrentUserId(null);
+      setFormData({ full_name: '', email: '', role: '' });
+      fetchUsers();
+    } catch (error) {
+      toast.error('Failed to save user.'); 
     }
-    setIsDialogOpen(false);
-    setIsEditing(false);
-    setCurrentUserId(null);
-    setFormData({ full_name: '', email: '', role: '' });
-    fetchUsers();
   };
 
   const handleEdit = (user) => {
@@ -93,11 +101,15 @@ function Users() {
 
   const handleDelete = async (id) => {
     const token = localStorage.getItem('token');
-    await fetch(`http://localhost:5000/users/${id}`, {
-      method: 'DELETE',
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    fetchUsers();
+    try {
+      await fetch(`http://localhost:5000/users/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      toast.success('User deleted successfully!');
+    } catch (error) {
+      toast.error('Failed to delete user.');
+    }
   };
 
   return (

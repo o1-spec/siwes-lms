@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useEffect, useState } from 'react';
 import {
   Table,
@@ -28,6 +29,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { toast } from 'sonner';
 
 function BorrowRecords() {
   const [records, setRecords] = useState([]);
@@ -52,35 +54,49 @@ function BorrowRecords() {
 
   const handleReturn = async (id) => {
     const token = localStorage.getItem('token');
-    await fetch(`http://localhost:5000/borrow_records/${id}/return`, {
-      method: 'PUT',
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    fetchRecords();
+    try {
+      await fetch(`http://localhost:5000/borrow_records/${id}/return`, {
+        method: 'PUT',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      toast.success('Book returned successfully!');
+      fetchRecords();
+    } catch (_error) {
+      toast.error('Failed to return book.');
+    }
   };
 
   const handleBorrow = async () => {
     const token = localStorage.getItem('token');
-    await fetch('http://localhost:5000/borrow_records', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(formData),
-    });
-    setIsDialogOpen(false);
-    setFormData({ user_id: '', book_id: '', due_date: '' });
-    fetchRecords();
+    try {
+      await fetch('http://localhost:5000/borrow_records', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(formData),
+      });
+      toast.success('Book borrowed successfully!');
+      setIsDialogOpen(false);
+      setFormData({ user_id: '', book_id: '', due_date: '' });
+      fetchRecords();
+    } catch (error) {
+      toast.error('Failed to borrow book.');
+    }
   };
-
   const handleDelete = async (id) => {
     const token = localStorage.getItem('token');
-    await fetch(`http://localhost:5000/borrow_records/${id}`, {
-      method: 'DELETE',
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    fetchRecords();
+    try {
+      await fetch(`http://localhost:5000/borrow_records/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      toast.success('Record deleted successfully!'); 
+      fetchRecords();
+    } catch (error) {
+      toast.error('Failed to delete record.'); 
+    }
   };
 
   return (
