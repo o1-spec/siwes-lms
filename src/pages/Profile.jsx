@@ -5,14 +5,22 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator'; // Add if not installed: npx shadcn@latest add separator
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'; // Add if not installed: npx shadcn@latest add avatar
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'; // Add Dialog
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { toast } from 'sonner';
-import { ArrowLeft, User, Lock, Mail, Shield } from 'lucide-react';
+import { ArrowLeft, User, Lock, Mail, Shield, Edit, Key } from 'lucide-react';
 
 function Profile() {
   const navigate = useNavigate();
   const [user, setUser] = useState({});
+  const [isEditing, setIsEditing] = useState(false); // For edit mode
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false); // For password modal
   const [formData, setFormData] = useState({
     full_name: '',
     email: '',
@@ -33,10 +41,34 @@ function Profile() {
   }, []);
 
   const handleUpdateProfile = async () => {
-    if (
-      formData.newPassword &&
-      formData.newPassword !== formData.confirmPassword
-    ) {
+    setIsLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch('http://localhost:5000/users/me', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          full_name: formData.full_name,
+          email: formData.email,
+        }),
+      });
+      const updatedUser = await res.json();
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      setUser(updatedUser);
+      setIsEditing(false);
+      toast.success('Profile updated successfully!');
+    } catch (error) {
+      toast.error('Failed to update profile.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleChangePassword = async () => {
+    if (formData.newPassword !== formData.confirmPassword) {
       toast.error('Passwords do not match.');
       return;
     }
@@ -50,18 +82,17 @@ function Profile() {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          full_name: formData.full_name,
-          email: formData.email,
-          password: formData.newPassword || undefined,
+          password: formData.newPassword,
         }),
       });
       const updatedUser = await res.json();
       localStorage.setItem('user', JSON.stringify(updatedUser));
       setUser(updatedUser);
       setFormData({ ...formData, newPassword: '', confirmPassword: '' });
-      toast.success('Profile updated successfully!');
+      setIsPasswordModalOpen(false);
+      toast.success('Password changed successfully!');
     } catch (error) {
-      toast.error('Failed to update profile.');
+      toast.error('Failed to change password.');
     } finally {
       setIsLoading(false);
     }
@@ -115,8 +146,7 @@ function Profile() {
             </CardHeader>
             <CardContent>
               <p className='text-sm text-muted-foreground text-center'>
-                Member since {new Date().getFullYear()}{' '}
-                {/* Placeholder; add created_at if available */}
+                Member since {new Date().getFullYear()} {/* Placeholder */}
               </p>
             </CardContent>
           </Card>
@@ -125,106 +155,167 @@ function Profile() {
           <div className='lg:col-span-2 space-y-6'>
             {/* Personal Information */}
             <Card>
-              <CardHeader>
+              <CardHeader className='flex flex-row items-center justify-between'>
                 <CardTitle className='flex items-center space-x-2'>
                   <User className='w-5 h-5' />
                   <span>Personal Information</span>
                 </CardTitle>
+                {!isEditing && (
+                  <Button variant='outline' onClick={() => setIsEditing(true)}>
+                    <Edit className='w-4 h-4 mr-2' />
+                    Edit
+                  </Button>
+                )}
               </CardHeader>
               <CardContent className='space-y-4'>
-                <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                  <div>
-                    <Label htmlFor='full_name'>Full Name</Label>
-                    <Input
-                      id='full_name'
-                      value={formData.full_name}
-                      onChange={(e) =>
-                        setFormData({ ...formData, full_name: e.target.value })
-                      }
-                      className='mt-1'
-                    />
+                {isEditing ? (
+                  <>
+                    <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                      <div>
+                        <Label htmlFor='full_name'>Full Name</Label>
+                        <Input
+                          id='full_name'
+                          value={formData.full_name}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              full_name: e.target.value,
+                            })
+                          }
+                          className='mt-1'
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor='email'>Email Address</Label>
+                        <Input
+                          id='email'
+                          type='email'
+                          value={formData.email}
+                          onChange={(e) =>
+                            setFormData({ ...formData, email: e.target.value })
+                          }
+                          className='mt-1'
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <Label htmlFor='role'>Role</Label>
+                      <Input
+                        id='role'
+                        value={user.role || ''}
+                        disabled
+                        className='mt-1 bg-gray-100'
+                      />
+                    </div>
+                    <div className='flex justify-end space-x-2'>
+                      <Button
+                        variant='outline'
+                        onClick={() => setIsEditing(false)}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        onClick={handleUpdateProfile}
+                        disabled={isLoading}
+                      >
+                        {isLoading ? 'Saving...' : 'Save Changes'}
+                      </Button>
+                    </div>
+                  </>
+                ) : (
+                  <div className='space-y-4'>
+                    <div className='flex items-center space-x-2'>
+                      <User className='w-4 h-4 text-muted-foreground' />
+                      <span className='text-sm'>
+                        Full Name: {user.full_name || 'N/A'}
+                      </span>
+                    </div>
+                    <div className='flex items-center space-x-2'>
+                      <Mail className='w-4 h-4 text-muted-foreground' />
+                      <span className='text-sm'>
+                        Email: {user.email || 'N/A'}
+                      </span>
+                    </div>
+                    <div className='flex items-center space-x-2'>
+                      <Shield className='w-4 h-4 text-muted-foreground' />
+                      <span className='text-sm capitalize'>
+                        Role: {user.role || 'N/A'}
+                      </span>
+                    </div>
                   </div>
-                  <div>
-                    <Label htmlFor='email'>Email Address</Label>
-                    <Input
-                      id='email'
-                      type='email'
-                      value={formData.email}
-                      onChange={(e) =>
-                        setFormData({ ...formData, email: e.target.value })
-                      }
-                      className='mt-1'
-                    />
-                  </div>
-                </div>
-                <div>
-                  <Label htmlFor='role'>Role</Label>
-                  <Input
-                    id='role'
-                    value={user.role || ''}
-                    disabled
-                    className='mt-1 bg-gray-100'
-                  />
-                </div>
+                )}
               </CardContent>
             </Card>
 
-            {/* Change Password */}
+            {/* Change Password Button */}
             <Card>
-              <CardHeader>
-                <CardTitle className='flex items-center space-x-2'>
-                  <Lock className='w-5 h-5' />
-                  <span>Change Password</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className='space-y-4'>
-                <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                  <div>
-                    <Label htmlFor='newPassword'>New Password</Label>
-                    <Input
-                      id='newPassword'
-                      type='password'
-                      placeholder='Enter new password'
-                      value={formData.newPassword}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          newPassword: e.target.value,
-                        })
-                      }
-                      className='mt-1'
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor='confirmPassword'>Confirm Password</Label>
-                    <Input
-                      id='confirmPassword'
-                      type='password'
-                      placeholder='Confirm new password'
-                      value={formData.confirmPassword}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          confirmPassword: e.target.value,
-                        })
-                      }
-                      className='mt-1'
-                    />
-                  </div>
-                </div>
+              <CardContent className='pt-6'>
+                <Dialog
+                  open={isPasswordModalOpen}
+                  onOpenChange={setIsPasswordModalOpen}
+                >
+                  <DialogTrigger asChild>
+                    <Button variant='outline' className='w-full'>
+                      <Key className='w-4 h-4 mr-2' />
+                      Change Password
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Change Password</DialogTitle>
+                    </DialogHeader>
+                    <div className='space-y-4'>
+                      <div>
+                        <Label htmlFor='newPassword' className='pb-1'>New Password</Label>
+                        <Input
+                          id='newPassword'
+                          type='password'
+                          placeholder='Enter new password'
+                          value={formData.newPassword}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              newPassword: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor='confirmPassword' className='pb-1'>
+                          Confirm Password
+                        </Label>
+                        <Input
+                          id='confirmPassword'
+                          type='password'
+                          placeholder='Confirm new password'
+                          value={formData.confirmPassword}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              confirmPassword: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+                      <div className='flex justify-end space-x-2'>
+                        <Button
+                          variant='outline'
+                          onClick={() => setIsPasswordModalOpen(false)}
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          onClick={handleChangePassword}
+                          disabled={isLoading}
+                        >
+                          {isLoading ? 'Changing...' : 'Change Password'}
+                        </Button>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
               </CardContent>
             </Card>
-
-            {/* Save Button */}
-            <div className='flex justify-end'>
-              <Button
-                onClick={handleUpdateProfile}
-                disabled={isLoading}
-                className='px-6'
-              >
-                {isLoading ? 'Saving...' : 'Save Changes'}
-              </Button>
-            </div>
           </div>
         </div>
       </div>
