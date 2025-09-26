@@ -11,6 +11,7 @@ import {
   X,
   LogOut,
   GraduationCap,
+  User,
 } from 'lucide-react';
 import {
   AlertDialog,
@@ -78,6 +79,7 @@ function Layout({ children }) {
     { path: '/books', icon: Book, label: 'Books' },
     { path: '/borrow-records', icon: FileText, label: 'Borrow Records' },
     { path: '/reports', icon: BarChart, label: 'Reports' },
+    { path: '/profile', icon: User, label: 'Profile' },
   ];
 
   return (
@@ -238,19 +240,24 @@ function Layout({ children }) {
             </div>
 
             <div className='flex items-center space-x-2 sm:space-x-4'>
-              <div className='text-right hidden sm:block'>
-                <p className='text-sm font-medium text-gray-900'>
-                  {user.full_name || 'Library Admin'}
-                </p>
-                <p className='text-xs text-gray-500 capitalize'>
-                  {user.role || 'Administrator'}
-                </p>
-              </div>
-              <div className='w-8 h-8 bg-black rounded-full flex items-center justify-center'>
-                <span className='text-white text-sm font-medium'>
-                  {userInitials}
-                </span>
-              </div>
+              <button
+                onClick={() => navigate('/profile')}
+                className='flex items-center space-x-2 cursor-pointer sm:space-x-4 hover:bg-gray-100 p-2 rounded-lg transition-colors'
+              >
+                <div className='text-right hidden sm:block'>
+                  <p className='text-sm font-medium text-gray-900'>
+                    {user.full_name || 'Library Admin'}
+                  </p>
+                  <p className='text-xs text-gray-500 capitalize'>
+                    {user.role || 'Administrator'}
+                  </p>
+                </div>
+                <div className='w-8 h-8 bg-black rounded-full flex items-center justify-center'>
+                  <span className='text-white text-sm font-medium'>
+                    {userInitials}
+                  </span>
+                </div>
+              </button>
             </div>
           </div>
         </header>

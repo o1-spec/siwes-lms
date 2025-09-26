@@ -12,6 +12,7 @@ import BorrowRecords from './pages/BorrowRecords';
 import Reports from './pages/Reports';
 import Login from './pages/Login';
 import { ToastProvider } from './components/ui/toast';
+import Profile from './pages/Profile';
 
 function App() {
   const token = localStorage.getItem('token');
@@ -59,6 +60,14 @@ function App() {
               element={
                 <Layout>
                   <Reports />
+                </Layout>
+              }
+            />
+            <Route
+              path='/profile'
+              element={
+                <Layout>
+                  <Profile />
                 </Layout>
               }
             />
