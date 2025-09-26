@@ -32,6 +32,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
+import API_BASE_URL from '@/api';
 
 function BorrowRecords() {
   const [records, setRecords] = useState([]);
@@ -48,7 +49,8 @@ function BorrowRecords() {
 
   const fetchRecords = async () => {
     const token = localStorage.getItem('token');
-    const data = await fetch('http://localhost:5000/borrow_records', {
+    const data = await fetch(`${API_BASE_URL}/borrow_records`, {
+      // Updated
       headers: { Authorization: `Bearer ${token}` },
     }).then((res) => res.json());
     setRecords(data);
@@ -57,7 +59,7 @@ function BorrowRecords() {
   const handleReturn = async (id) => {
     const token = localStorage.getItem('token');
     try {
-      await fetch(`http://localhost:5000/borrow_records/${id}/return`, {
+      await fetch(`${API_BASE_URL}/borrow_records/${id}/return`, {
         method: 'PUT',
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -71,7 +73,7 @@ function BorrowRecords() {
   const handleBorrow = async () => {
     const token = localStorage.getItem('token');
     try {
-      await fetch('http://localhost:5000/borrow_records', {
+      await fetch(`${API_BASE_URL}/borrow_records`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -90,7 +92,7 @@ function BorrowRecords() {
   const handleDelete = async (id) => {
     const token = localStorage.getItem('token');
     try {
-      await fetch(`http://localhost:5000/borrow_records/${id}`, {
+      await fetch(`${API_BASE_URL}/borrow_records/${id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });

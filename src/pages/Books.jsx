@@ -16,6 +16,7 @@ import {
   Copy,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import API_BASE_URL from '@/api';
 
 function Books() {
   const [books, setBooks] = useState([]);
@@ -48,7 +49,7 @@ function Books() {
 
   const fetchBooks = async () => {
     const token = localStorage.getItem('token');
-    const data = await fetch('http://localhost:5000/books', {
+    const data = await fetch(`${API_BASE_URL}/books`, {
       headers: { Authorization: `Bearer ${token}` },
     }).then((res) => res.json());
     setBooks(data);
@@ -58,7 +59,7 @@ function Books() {
     const token = localStorage.getItem('token');
     try {
       if (isEditing) {
-        await fetch(`http://localhost:5000/books/${currentBookId}`, {
+        await fetch(`${API_BASE_URL}/books/${currentBookId}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -68,7 +69,7 @@ function Books() {
         });
         toast.success('Book updated successfully!');
       } else {
-        await fetch('http://localhost:5000/books', {
+        await fetch(`${API_BASE_URL}/books`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -110,7 +111,7 @@ function Books() {
   const handleDelete = async (id) => {
     const token = localStorage.getItem('token');
     try {
-      await fetch(`http://localhost:5000/books/${id}`, {
+      await fetch(`${API_BASE_URL}/books/${id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });

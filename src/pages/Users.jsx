@@ -32,6 +32,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
+import API_BASE_URL from '@/api';
 
 function Users() {
   const [users, setUsers] = useState([]);
@@ -50,7 +51,7 @@ function Users() {
 
   const fetchUsers = async () => {
     const token = localStorage.getItem('token');
-    const data = await fetch('http://localhost:5000/users', {
+    const data = await fetch(`${API_BASE_URL}/users`, {
       headers: { Authorization: `Bearer ${token}` },
     }).then((res) => res.json());
     setUsers(data);
@@ -60,7 +61,7 @@ function Users() {
     const token = localStorage.getItem('token');
     try {
       if (isEditing) {
-        await fetch(`http://localhost:5000/users/${currentUserId}`, {
+        await fetch(`${API_BASE_URL}/users/${currentUserId}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -70,7 +71,7 @@ function Users() {
         });
         toast.success('User updated successfully!');
       } else {
-        await fetch('http://localhost:5000/users', {
+        await fetch(`${API_BASE_URL}/users`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -104,7 +105,7 @@ function Users() {
   const handleDelete = async (id) => {
     const token = localStorage.getItem('token');
     try {
-      await fetch(`http://localhost:5000/users/${id}`, {
+      await fetch(`${API_BASE_URL}/users/${id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });

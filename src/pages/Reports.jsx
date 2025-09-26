@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
+import API_BASE_URL from '@/api';
 
 function Reports() {
   const [reports, setReports] = useState({
@@ -26,13 +27,13 @@ function Reports() {
       try {
         const [mostBorrowedRes, activeUsersRes, overdueRes] = await Promise.all(
           [
-            fetch('http://localhost:5000/reports/most-borrowed', {
+            fetch(`${API_BASE_URL}/reports/most-borrowed`, {
               headers: { Authorization: `Bearer ${token}` },
             }),
-            fetch('http://localhost:5000/reports/active-users', {
+            fetch(`${API_BASE_URL}/reports/active-users`, {
               headers: { Authorization: `Bearer ${token}` },
             }),
-            fetch('http://localhost:5000/reports/overdue', {
+            fetch(`${API_BASE_URL}/reports/overdue`, {
               headers: { Authorization: `Bearer ${token}` },
             }),
           ]

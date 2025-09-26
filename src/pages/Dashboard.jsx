@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
+import API_BASE_URL from '@/api';
 
 function Dashboard() {
   const [stats, setStats] = useState({
@@ -33,16 +34,16 @@ function Dashboard() {
   useEffect(() => {
     const token = localStorage.getItem('token');
     Promise.all([
-      fetch('http://localhost:5000/books', {
+      fetch(`${API_BASE_URL}/books`, {
         headers: { Authorization: `Bearer ${token}` },
       }).then((res) => res.json()),
-      fetch('http://localhost:5000/users', {
+      fetch(`${API_BASE_URL}/users`, {
         headers: { Authorization: `Bearer ${token}` },
       }).then((res) => res.json()),
-      fetch('http://localhost:5000/borrow_records', {
+      fetch(`${API_BASE_URL}/borrow_records`, {
         headers: { Authorization: `Bearer ${token}` },
       }).then((res) => res.json()),
-      fetch('http://localhost:5000/reports/overdue', {
+      fetch(`${API_BASE_URL}/reports/overdue`, {
         headers: { Authorization: `Bearer ${token}` },
       }).then((res) => res.json()),
     ])

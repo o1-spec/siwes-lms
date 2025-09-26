@@ -15,6 +15,7 @@ import {
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { toast } from 'sonner';
 import { ArrowLeft, User, Lock, Mail, Shield, Edit, Key } from 'lucide-react';
+import API_BASE_URL from '@/api';
 
 function Profile() {
   const navigate = useNavigate();
@@ -44,7 +45,7 @@ function Profile() {
     setIsLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:5000/users/me', {
+       const res = await fetch(`${API_BASE_URL}/users/me`, { 
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -75,7 +76,7 @@ function Profile() {
     setIsLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:5000/users/me', {
+      const res = await fetch(`${API_BASE_URL}/users/me`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

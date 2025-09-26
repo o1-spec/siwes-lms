@@ -28,6 +28,7 @@ import {
   Eye,
 } from 'lucide-react';
 import Header from '../components/Header';
+import API_BASE_URL from '@/api';
 
 function Login() {
   const [isRegister, setIsRegister] = useState(false);
@@ -50,9 +51,9 @@ function Login() {
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
-      const url = isRegister
-        ? 'http://localhost:5000/register'
-        : 'http://localhost:5000/login';
+     const url = isRegister
+        ? `${API_BASE_URL}/register`
+        : `${API_BASE_URL}/login`; 
       const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -61,8 +62,7 @@ function Login() {
       const data = await res.json();
       if (data.token) {
         localStorage.setItem('token', data.token);
-        // Fetch and store user data
-        const userRes = await fetch('http://localhost:5000/users/me', {
+        const userRes = await fetch(`${API_BASE_URL}/users/me`, {
           headers: { Authorization: `Bearer ${data.token}` },
         });
         const user = await userRes.json();
