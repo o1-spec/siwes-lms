@@ -127,10 +127,10 @@ function Dashboard() {
       <div className='bg-gradient-to-r from-gray-900 to-black rounded-xl p-4 sm:p-6 text-white'>
         <div className='flex items-center justify-between'>
           <div>
-            <h1 className='text-2xl sm:text-3xl font-bold mb-2'>
+            <h1 className='text-[22px] sm:text-3xl font-bold mb-2'>
               Welcome to LibraryMS Dashboard
             </h1>
-            <p className='text-gray-300 text-base sm:text-lg'>
+            <p className='text-gray-300 text-[14px] sm:text-lg'>
               Monitor and manage your library operations efficiently
             </p>
           </div>
