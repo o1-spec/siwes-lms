@@ -83,28 +83,30 @@ function Login() {
     navigate('/login');
   };
 
+  // ... existing code ...
+
   return (
     <div className='min-h-screen bg-gradient-to-br from-slate-50 to-blue-50'>
       <Header />
 
-      <div className='flex items-center justify-center px-4 py-12'>
-        <div className='w-full max-w-6xl grid lg:grid-cols-2 gap-12 items-center'>
+      <div className='flex items-center justify-center px-4 py-8 md:py-12'>
+        <div className='w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center'>
           {/* Left Side - Hero Content */}
-          <div className='space-y-8'>
-            <div className='space-y-4'>
-              <div className='inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium'>
-                <Shield className='w-4 h-4 mr-2' />
+          <div className='space-y-6 md:space-y-8 order-2 lg:order-1'>
+            <div className='space-y-3 md:space-y-4'>
+              <div className='inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary text-xs md:text-sm font-medium'>
+                <Shield className='w-3 h-3 md:w-4 md:h-4 mr-2' />
                 Secure Academic Platform
               </div>
 
-              <h1 className='text-4xl lg:text-5xl font-bold text-balance leading-tight'>
+              <h1 className='text-3xl md:text-4xl lg:text-5xl font-bold text-balance leading-tight'>
                 Modern Library
                 <span className='text-primary'> Management</span>
-                <br />
+                <br className='hidden md:block' />
                 for Academic Excellence
               </h1>
 
-              <p className='text-lg text-muted-foreground text-pretty leading-relaxed'>
+              <p className='text-base md:text-lg text-muted-foreground text-pretty leading-relaxed'>
                 Streamline your library operations with our comprehensive
                 management system. Track books, manage users, and generate
                 insightful reports with ease.
@@ -112,37 +114,43 @@ function Login() {
             </div>
 
             {/* Feature Grid */}
-            <div className='grid grid-cols-1 sm:grid-cols-3 gap-6'>
-              <div className='flex items-center space-x-3 p-4 rounded-lg bg-white/50 border border-border/50'>
-                <div className='flex items-center justify-center w-10 h-10 bg-primary/10 rounded-lg'>
-                  <BookOpen className='w-5 h-5 text-primary' />
+            <div className='grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6'>
+              <div className='flex items-center space-x-3 p-3 md:p-4 rounded-lg bg-white/50 border border-border/50'>
+                <div className='flex items-center justify-center w-8 h-8 md:w-10 md:h-10 bg-primary/10 rounded-lg'>
+                  <BookOpen className='w-4 h-4 md:w-5 md:h-5 text-primary' />
                 </div>
                 <div>
-                  <h3 className='font-semibold text-sm'>Book Management</h3>
+                  <h3 className='font-semibold text-xs md:text-sm'>
+                    Book Management
+                  </h3>
                   <p className='text-xs text-muted-foreground'>
                     Catalog & Track
                   </p>
                 </div>
               </div>
 
-              <div className='flex items-center space-x-3 p-4 rounded-lg bg-white/50 border border-border/50'>
-                <div className='flex items-center justify-center w-10 h-10 bg-accent/10 rounded-lg'>
-                  <Users className='w-5 h-5 text-accent' />
+              <div className='flex items-center space-x-3 p-3 md:p-4 rounded-lg bg-white/50 border border-border/50'>
+                <div className='flex items-center justify-center w-8 h-8 md:w-10 md:h-10 bg-accent/10 rounded-lg'>
+                  <Users className='w-4 h-4 md:w-5 md:h-5 text-accent' />
                 </div>
                 <div>
-                  <h3 className='font-semibold text-sm'>User Records</h3>
+                  <h3 className='font-semibold text-xs md:text-sm'>
+                    User Records
+                  </h3>
                   <p className='text-xs text-muted-foreground'>
                     Students & Staff
                   </p>
                 </div>
               </div>
 
-              <div className='flex items-center space-x-3 p-4 rounded-lg bg-white/50 border border-border/50'>
-                <div className='flex items-center justify-center w-10 h-10 bg-destructive/10 rounded-lg'>
-                  <BarChart3 className='w-5 h-5 text-destructive' />
+              <div className='flex items-center space-x-3 p-3 md:p-4 rounded-lg bg-white/50 border border-border/50'>
+                <div className='flex items-center justify-center w-8 h-8 md:w-10 md:h-10 bg-destructive/10 rounded-lg'>
+                  <BarChart3 className='w-4 h-4 md:w-5 md:h-5 text-destructive' />
                 </div>
                 <div>
-                  <h3 className='font-semibold text-sm'>Analytics</h3>
+                  <h3 className='font-semibold text-xs md:text-sm'>
+                    Analytics
+                  </h3>
                   <p className='text-xs text-muted-foreground'>
                     Reports & Insights
                   </p>
@@ -152,21 +160,21 @@ function Login() {
           </div>
 
           {/* Right Side - Login Form */}
-          <div className='flex justify-center lg:justify-end'>
+          <div className='flex justify-center lg:justify-end order-1 lg:order-2'>
             <Card className='w-full max-w-md shadow-xl border-0 bg-white/80 backdrop-blur-sm'>
               <CardHeader className='space-y-2 text-center'>
-                <CardTitle className='text-2xl font-bold'>
+                <CardTitle className='text-xl md:text-2xl font-bold'>
                   {isRegister ? 'Create Account' : 'Welcome Back'}
                 </CardTitle>
-                <CardDescription className='text-muted-foreground'>
+                <CardDescription className='text-sm md:text-base text-muted-foreground'>
                   {isRegister
                     ? 'Join the academic library management system'
                     : 'Sign in to access your library dashboard'}
                 </CardDescription>
               </CardHeader>
 
-              <CardContent className='space-y-6'>
-                <div className='space-y-4'>
+              <CardContent className='space-y-4 md:space-y-6'>
+                <div className='space-y-3 md:space-y-4'>
                   {isRegister && (
                     <div className='space-y-2'>
                       <Label htmlFor='fullName' className='text-sm font-medium'>
@@ -182,7 +190,7 @@ function Login() {
                             full_name: e.target.value,
                           })
                         }
-                        className='h-11'
+                        className='h-10 md:h-11'
                       />
                     </div>
                   )}
@@ -199,7 +207,7 @@ function Login() {
                       onChange={(e) =>
                         setFormData({ ...formData, email: e.target.value })
                       }
-                      className='h-11'
+                      className='h-10 md:h-11'
                     />
                   </div>
 
@@ -216,7 +224,7 @@ function Login() {
                         onChange={(e) =>
                           setFormData({ ...formData, password: e.target.value })
                         }
-                        className='h-11 pr-10'
+                        className='h-10 md:h-11 pr-10'
                       />
                       <Button
                         type='button'
@@ -245,7 +253,7 @@ function Login() {
                           setFormData({ ...formData, role: value })
                         }
                       >
-                        <SelectTrigger className='h-11'>
+                        <SelectTrigger className='h-10 md:h-11'>
                           <SelectValue placeholder='Select your role' />
                         </SelectTrigger>
                         <SelectContent>
@@ -258,10 +266,10 @@ function Login() {
                   )}
                 </div>
 
-                <div className='space-y-4'>
+                <div className='space-y-3 md:space-y-4'>
                   <Button
                     onClick={handleSubmit}
-                    className='w-full h-11 font-medium'
+                    className='w-full h-10 md:h-11 font-medium'
                     disabled={isLoading}
                   >
                     {isLoading ? (
@@ -279,18 +287,22 @@ function Login() {
                   <Button
                     variant='ghost'
                     onClick={() => setIsRegister(!isRegister)}
-                    className='w-full h-11 font-medium'
+                    className='w-full h-10 md:h-11 font-medium'
                     disabled={isLoading}
                   >
                     {isRegister ? (
                       <>
                         Already have an account?{' '}
-                        <span className='underline cursor-pointer'>Sign In</span>
+                        <span className='underline cursor-pointer'>
+                          Sign In
+                        </span>
                       </>
                     ) : (
                       <>
                         Need an account?{' '}
-                        <span className='underline cursor-pointer'>Register</span>
+                        <span className='underline cursor-pointer'>
+                          Register
+                        </span>
                       </>
                     )}
                   </Button>
@@ -298,7 +310,7 @@ function Login() {
                     <Button
                       variant='outline'
                       onClick={handleLogout}
-                      className='w-full h-11 font-medium bg-transparent'
+                      className='w-full h-10 md:h-11 font-medium bg-transparent'
                     >
                       Sign Out
                     </Button>
