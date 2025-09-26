@@ -15,9 +15,18 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'; // Add this import
+} from '@/components/ui/select';
+import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, Users, BarChart3, Shield, ArrowRight } from 'lucide-react';
+import {
+  BookOpen,
+  Users,
+  BarChart3,
+  Shield,
+  ArrowRight,
+  EyeOff,
+  Eye,
+} from 'lucide-react';
 import Header from '../components/Header';
 
 function Login() {
@@ -29,6 +38,7 @@ function Login() {
     role: '',
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -50,13 +60,18 @@ function Login() {
       const data = await res.json();
       if (data.token) {
         localStorage.setItem('token', data.token);
+        setFormData({ full_name: '', email: '', password: '', role: '' });
+        setIsRegister(true);
         navigate('/');
+        toast.success('Authentication successful!');
       } else if (data.message) {
-        alert(data.message); // For register success
+        setFormData({ full_name: '', email: '', password: '', role: '' });
+        setIsRegister(false);
+        toast.success(data.message);
       }
     } catch (error) {
       console.error('Authentication error:', error);
-      alert('An error occurred. Please try again.');
+      toast.error('An error occurred. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -64,6 +79,7 @@ function Login() {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    toast.success('Logout successful!');
     navigate('/login');
   };
 
@@ -191,16 +207,31 @@ function Login() {
                     <Label htmlFor='password' className='text-sm font-medium'>
                       Password
                     </Label>
-                    <Input
-                      id='password'
-                      type='password'
-                      placeholder='Enter your password'
-                      value={formData.password}
-                      onChange={(e) =>
-                        setFormData({ ...formData, password: e.target.value })
-                      }
-                      className='h-11'
-                    />
+                    <div className='relative'>
+                      <Input
+                        id='password'
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder='Enter your password'
+                        value={formData.password}
+                        onChange={(e) =>
+                          setFormData({ ...formData, password: e.target.value })
+                        }
+                        className='h-11 pr-10'
+                      />
+                      <Button
+                        type='button'
+                        variant='ghost'
+                        size='sm'
+                        className='absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent'
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? (
+                          <EyeOff className='h-4 w-4 text-muted-foreground' />
+                        ) : (
+                          <Eye className='h-4 w-4 text-muted-foreground' />
+                        )}
+                      </Button>
+                    </div>
                   </div>
 
                   {isRegister && (
@@ -244,18 +275,24 @@ function Login() {
                       </div>
                     )}
                   </Button>
-
                   <Button
                     variant='ghost'
                     onClick={() => setIsRegister(!isRegister)}
                     className='w-full h-11 font-medium'
                     disabled={isLoading}
                   >
-                    {isRegister
-                      ? 'Already have an account? Sign In'
-                      : 'Need an account? Register'}
+                    {isRegister ? (
+                      <>
+                        Already have an account?{' '}
+                        <span className='underline cursor-pointer'>Sign In</span>
+                      </>
+                    ) : (
+                      <>
+                        Need an account?{' '}
+                        <span className='underline cursor-pointer'>Register</span>
+                      </>
+                    )}
                   </Button>
-
                   {localStorage.getItem('token') && (
                     <Button
                       variant='outline'

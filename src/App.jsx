@@ -1,23 +1,29 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom"
-import Layout from "./components/Layout"
-import Dashboard from "./pages/Dashboard"
-import Users from "./pages/Users"
-import Books from "./pages/Books"
-import BorrowRecords from "./pages/BorrowRecords"
-import Reports from "./pages/Reports"
-import Login from "./pages/Login" // Add this import
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from 'react-router-dom';
+import Layout from './components/Layout';
+import Dashboard from './pages/Dashboard';
+import Users from './pages/Users';
+import Books from './pages/Books';
+import BorrowRecords from './pages/BorrowRecords';
+import Reports from './pages/Reports';
+import Login from './pages/Login';
+import { ToastProvider } from './components/ui/toast';
 
 function App() {
-  const token = localStorage.getItem("token")
+  const token = localStorage.getItem('token');
 
   return (
     <Router>
       <Routes>
-        <Route path="/login" element={<Login />} />
+        <Route path='/login' element={<Login />} />
         {token ? (
           <>
             <Route
-              path="/"
+              path='/'
               element={
                 <Layout>
                   <Dashboard />
@@ -25,7 +31,7 @@ function App() {
               }
             />
             <Route
-              path="/users"
+              path='/users'
               element={
                 <Layout>
                   <Users />
@@ -33,7 +39,7 @@ function App() {
               }
             />
             <Route
-              path="/books"
+              path='/books'
               element={
                 <Layout>
                   <Books />
@@ -41,7 +47,7 @@ function App() {
               }
             />
             <Route
-              path="/borrow-records"
+              path='/borrow-records'
               element={
                 <Layout>
                   <BorrowRecords />
@@ -49,7 +55,7 @@ function App() {
               }
             />
             <Route
-              path="/reports"
+              path='/reports'
               element={
                 <Layout>
                   <Reports />
@@ -58,11 +64,12 @@ function App() {
             />
           </>
         ) : (
-          <Route path="*" element={<Navigate to="/login" />} />
+          <Route path='*' element={<Navigate to='/login' />} />
         )}
       </Routes>
+      <ToastProvider />
     </Router>
-  )
+  );
 }
 
-export default App
+export default App;

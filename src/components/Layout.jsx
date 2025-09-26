@@ -3,15 +3,22 @@
 import { useState } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
 import { Book, Users, FileText, BarChart, Home, Menu, X, LogOut, GraduationCap } from "lucide-react"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog" // Add this import
 
 function Layout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [isLoggingOut, setIsLoggingOut] = useState(false) // Add loading state
   const navigate = useNavigate()
   const location = useLocation()
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    setIsLoggingOut(true)
     localStorage.removeItem("token")
-    navigate("/login")
+    // Simulate a short delay for UX
+    setTimeout(() => {
+      navigate("/login")
+      setIsLoggingOut(false)
+    }, 500)
   }
 
   const navigationItems = [
@@ -61,8 +68,8 @@ function Layout({ children }) {
                 onClick={() => navigate(item.path)}
                 className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
                   isActive
-                    ? "bg-gray-800 text-white border border-gray-700"
-                    : "text-black hover:bg-gray-800 hover:text-white"
+                    ? "bg-black text-white border border-gray-700"
+                    : "text-black hover:bg-black hover:text-white"
                 }`}
               >
                 <Icon className={`w-5 h-5 ${isActive ? "text-white" : ""}`} />
@@ -72,17 +79,34 @@ function Layout({ children }) {
           })}
         </nav>
 
-        {/* Logout Button */}
+        {/* Logout Button with Dialog */}
         <div className="absolute bottom-4 left-4 right-4">
-          <button
-            onClick={handleLogout}
-            className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-red-400 hover:bg-gray-800 transition-all duration-200 ${
-              !sidebarOpen ? "justify-center" : ""
-            }`}
-          >
-            <LogOut className="w-5 h-5" />
-            {sidebarOpen && <span className="font-medium">Logout</span>}
-          </button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <button
+                className={`w-[210px] flex items-center space-x-3 px-3 py-2.5 rounded-lg text-red-400 hover:bg-gray-800 transition-all duration-200 ${
+                  !sidebarOpen ? "justify-center" : ""
+                }`}
+              >
+                <LogOut className="w-5 h-5" />
+                {sidebarOpen && <span className="font-medium">Logout</span>}
+              </button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Confirm Logout</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Are you sure you want to log out? You will need to sign in again to access the system.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleLogout} disabled={isLoggingOut}>
+                  {isLoggingOut ? "Logging out..." : "Logout"}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>
 
