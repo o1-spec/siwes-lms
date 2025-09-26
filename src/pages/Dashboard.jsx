@@ -233,7 +233,7 @@ function Dashboard() {
           <div className='grid grid-cols-2 gap-4'>
             <button
               onClick={() => navigate('/books')}
-              className='flex flex-col items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200'
+              className='flex flex-col items-center p-4 bg-gray-50 cursor-pointer rounded-lg hover:bg-gray-100 transition-colors duration-200'
             >
               <Book className='w-8 h-8 text-gray-600 mb-2' />
               <span className='text-sm font-medium text-gray-700'>
@@ -242,7 +242,7 @@ function Dashboard() {
             </button>
             <button
               onClick={() => navigate('/users')}
-              className='flex flex-col items-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors duration-200'
+              className='flex flex-col items-center p-4 bg-green-50 cursor-pointer rounded-lg hover:bg-green-100 transition-colors duration-200'
             >
               <Users className='w-8 h-8 text-green-600 mb-2' />
               <span className='text-sm font-medium text-green-700'>
@@ -251,7 +251,7 @@ function Dashboard() {
             </button>
             <button
               onClick={() => navigate('/borrow-records')}
-              className='flex flex-col items-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors duration-200'
+              className='flex flex-col items-center p-4 bg-purple-50 cursor-pointer rounded-lg hover:bg-purple-100 transition-colors duration-200'
             >
               <FileText className='w-8 h-8 text-purple-600 mb-2' />
               <span className='text-sm font-medium text-purple-700'>
@@ -260,7 +260,7 @@ function Dashboard() {
             </button>
             <button
               onClick={() => navigate('/reports')}
-              className='flex flex-col items-center p-4 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors duration-200'
+              className='flex flex-col items-center cursor-pointer p-4 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors duration-200'
             >
               <Calendar className='w-8 h-8 text-orange-600 mb-2' />
               <span className='text-sm font-medium text-orange-700'>
