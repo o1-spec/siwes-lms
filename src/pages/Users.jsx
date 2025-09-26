@@ -1,3 +1,5 @@
+'use client';
+
 /* eslint-disable no-unused-vars */
 import { useEffect, useState } from 'react';
 import {
@@ -66,7 +68,7 @@ function Users() {
           },
           body: JSON.stringify(formData),
         });
-        toast.success('User updated successfully!'); 
+        toast.success('User updated successfully!');
       } else {
         await fetch('http://localhost:5000/users', {
           method: 'POST',
@@ -76,7 +78,7 @@ function Users() {
           },
           body: JSON.stringify(formData),
         });
-        toast.success('User added successfully!'); 
+        toast.success('User added successfully!');
       }
       setIsDialogOpen(false);
       setIsEditing(false);
@@ -84,7 +86,7 @@ function Users() {
       setFormData({ full_name: '', email: '', role: '' });
       fetchUsers();
     } catch (error) {
-      toast.error('Failed to save user.'); 
+      toast.error('Failed to save user.');
     }
   };
 

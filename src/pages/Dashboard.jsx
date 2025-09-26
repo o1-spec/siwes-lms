@@ -15,14 +15,19 @@ import { useNavigate } from 'react-router-dom';
 
 function Dashboard() {
   const [stats, setStats] = useState({
-    totalBooks: 0,
-    totalUsers: 0,
-    activeBorrows: 0,
+    totalBooks: 3,
+    totalUsers: 5,
+    activeBorrows: 1,
     overdueBooks: 0,
   });
 
-  const [recentActivity, setRecentActivity] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [recentActivity, setRecentActivity] = useState([
+    {
+      user_id: 1,
+      borrow_date: '2025-09-25',
+    },
+  ]);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -50,7 +55,11 @@ function Dashboard() {
         });
 
         const recent = borrows
-          .sort((a, b) => new Date(b.borrow_date) - new Date(a.borrow_date))
+          .sort(
+            (a, b) =>
+              new Date(b.borrow_date).getTime() -
+              new Date(a.borrow_date).getTime()
+          )
           .slice(0, 5);
         setRecentActivity(recent);
         setLoading(false);
@@ -115,13 +124,13 @@ function Dashboard() {
   return (
     <div className='space-y-6'>
       {/* Welcome Section */}
-      <div className='bg-gradient-to-r from-gray-900 to-black rounded-xl p-6 text-white'>
+      <div className='bg-gradient-to-r from-gray-900 to-black rounded-xl p-4 sm:p-6 text-white'>
         <div className='flex items-center justify-between'>
           <div>
-            <h1 className='text-3xl font-bold mb-2'>
+            <h1 className='text-2xl sm:text-3xl font-bold mb-2'>
               Welcome to LibraryMS Dashboard
             </h1>
-            <p className='text-gray-300 text-lg'>
+            <p className='text-gray-300 text-base sm:text-lg'>
               Monitor and manage your library operations efficiently
             </p>
           </div>
@@ -133,40 +142,37 @@ function Dashboard() {
         </div>
       </div>
 
-      {/* Stats Grid */}
-      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
+      {/* Stats Grid - Mobile responsive */}
+      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6'>
         {statCards.map((card, index) => {
           const Icon = card.icon;
           return (
             <div
               key={index}
-              className='bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200'
+              className='bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6 hover:shadow-md transition-shadow duration-200'
             >
               <div className='flex items-center justify-between mb-4'>
                 <div
-                  className={`w-12 h-12 ${card.bgColor} rounded-lg flex items-center justify-center`}
+                  className={`w-10 h-10 sm:w-12 sm:h-12 ${card.bgColor} rounded-lg flex items-center justify-center`}
                 >
-                  <Icon className={`w-6 h-6 ${card.textColor}`} />
+                  <Icon className={`w-5 h-5 sm:w-6 sm:h-6 ${card.textColor}`} />
                 </div>
                 <div
-                  className={`flex items-center space-x-1 text-sm ${
+                  className={`flex items-center space-x-1 text-xs sm:text-sm ${
                     card.changeType === 'positive'
                       ? 'text-green-600'
                       : 'text-red-600'
                   }`}
                 >
-                  <TrendingUp className='w-4 h-4' />
+                  <TrendingUp className='w-3 h-3 sm:w-4 sm:h-4' />
                   <span>{card.change}</span>
                 </div>
               </div>
               <div>
-                <h3 className='text-sm font-medium text-gray-600 mb-1'>
+                <h3 className='text-xs sm:text-sm font-medium text-gray-600 mb-1'>
                   {card.title}
                 </h3>
-                <p
-                  className='text-3xl font-bold text-gray-900'
-                  style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 600 }}
-                >
+                <p className='text-2xl sm:text-3xl font-bold text-gray-900'>
                   {card.value.toLocaleString()}
                 </p>
               </div>
@@ -175,18 +181,15 @@ function Dashboard() {
         })}
       </div>
 
-      {/* Recent Activity & Quick Actions */}
+      {/* Recent Activity & Quick Actions - Stack on mobile */}
       <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
         {/* Recent Activity */}
-        <div className='bg-white rounded-xl shadow-sm border border-gray-200 p-6'>
+        <div className='bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6'>
           <div className='flex items-center justify-between mb-6'>
-            <h2
-              className='text-xl font-semibold text-gray-900'
-              style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 600 }}
-            >
+            <h2 className='text-lg sm:text-xl font-semibold text-gray-900'>
               Recent Activity
             </h2>
-            <Clock className='w-5 h-5 text-gray-400' />
+            <Clock className='w-4 h-4 sm:w-5 sm:h-5 text-gray-400' />
           </div>
           <div className='space-y-4'>
             {recentActivity.length > 0 ? (
@@ -195,20 +198,14 @@ function Dashboard() {
                   key={index}
                   className='flex items-center space-x-3 p-3 bg-gray-50 rounded-lg'
                 >
-                  <div className='w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center'>
+                  <div className='w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0'>
                     <FileText className='w-4 h-4 text-gray-600' />
                   </div>
-                  <div className='flex-1'>
-                    <p className='text-sm font-medium text-gray-900'>
+                  <div className='flex-1 min-w-0'>
+                    <p className='text-sm font-medium text-gray-900 truncate'>
                       Book borrowed by User #{activity.user_id}
                     </p>
-                    <p
-                      className='text-xs text-gray-500'
-                      style={{
-                        fontFamily: 'Poppins, sans-serif',
-                        fontWeight: 400,
-                      }}
-                    >
+                    <p className='text-xs text-gray-500'>
                       {new Date(activity.borrow_date).toLocaleDateString()}
                     </p>
                   </div>
@@ -223,47 +220,44 @@ function Dashboard() {
         </div>
 
         {/* Quick Actions */}
-        <div className='bg-white rounded-xl shadow-sm border border-gray-200 p-6'>
-          <h2
-            className='text-xl font-semibold text-gray-900 mb-6'
-            style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 600 }}
-          >
+        <div className='bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6'>
+          <h2 className='text-lg sm:text-xl font-semibold text-gray-900 mb-6'>
             Quick Actions
           </h2>
-          <div className='grid grid-cols-2 gap-4'>
+          <div className='grid grid-cols-2 gap-3 sm:gap-4'>
             <button
               onClick={() => navigate('/books')}
-              className='flex flex-col items-center p-4 bg-gray-50 cursor-pointer rounded-lg hover:bg-gray-100 transition-colors duration-200'
+              className='flex flex-col items-center p-3 sm:p-4 bg-gray-50 cursor-pointer rounded-lg hover:bg-gray-100 transition-colors duration-200'
             >
-              <Book className='w-8 h-8 text-gray-600 mb-2' />
-              <span className='text-sm font-medium text-gray-700'>
+              <Book className='w-6 h-6 sm:w-8 sm:h-8 text-gray-600 mb-2' />
+              <span className='text-xs sm:text-sm font-medium text-gray-700 text-center'>
                 Add Book
               </span>
             </button>
             <button
               onClick={() => navigate('/users')}
-              className='flex flex-col items-center p-4 bg-green-50 cursor-pointer rounded-lg hover:bg-green-100 transition-colors duration-200'
+              className='flex flex-col items-center p-3 sm:p-4 bg-green-50 cursor-pointer rounded-lg hover:bg-green-100 transition-colors duration-200'
             >
-              <Users className='w-8 h-8 text-green-600 mb-2' />
-              <span className='text-sm font-medium text-green-700'>
+              <Users className='w-6 h-6 sm:w-8 sm:h-8 text-green-600 mb-2' />
+              <span className='text-xs sm:text-sm font-medium text-green-700 text-center'>
                 Add User
               </span>
             </button>
             <button
               onClick={() => navigate('/borrow-records')}
-              className='flex flex-col items-center p-4 bg-purple-50 cursor-pointer rounded-lg hover:bg-purple-100 transition-colors duration-200'
+              className='flex flex-col items-center p-3 sm:p-4 bg-purple-50 cursor-pointer rounded-lg hover:bg-purple-100 transition-colors duration-200'
             >
-              <FileText className='w-8 h-8 text-purple-600 mb-2' />
-              <span className='text-sm font-medium text-purple-700'>
+              <FileText className='w-6 h-6 sm:w-8 sm:h-8 text-purple-600 mb-2' />
+              <span className='text-xs sm:text-sm font-medium text-purple-700 text-center'>
                 New Borrow
               </span>
             </button>
             <button
               onClick={() => navigate('/reports')}
-              className='flex flex-col items-center cursor-pointer p-4 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors duration-200'
+              className='flex flex-col items-center p-3 sm:p-4 bg-orange-50 cursor-pointer rounded-lg hover:bg-orange-100 transition-colors duration-200'
             >
-              <Calendar className='w-8 h-8 text-orange-600 mb-2' />
-              <span className='text-sm font-medium text-orange-700'>
+              <Calendar className='w-6 h-6 sm:w-8 sm:h-8 text-orange-600 mb-2' />
+              <span className='text-xs sm:text-sm font-medium text-orange-700 text-center'>
                 View Reports
               </span>
             </button>

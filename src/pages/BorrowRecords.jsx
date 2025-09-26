@@ -1,3 +1,5 @@
+'use client';
+
 /* eslint-disable no-unused-vars */
 import { useEffect, useState } from 'react';
 import {
@@ -92,10 +94,10 @@ function BorrowRecords() {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });
-      toast.success('Record deleted successfully!'); 
+      toast.success('Record deleted successfully!');
       fetchRecords();
     } catch (error) {
-      toast.error('Failed to delete record.'); 
+      toast.error('Failed to delete record.');
     }
   };
 

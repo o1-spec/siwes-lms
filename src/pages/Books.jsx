@@ -66,7 +66,7 @@ function Books() {
           },
           body: JSON.stringify(formData),
         });
-        toast.success('Book updated successfully!'); 
+        toast.success('Book updated successfully!');
       } else {
         await fetch('http://localhost:5000/books', {
           method: 'POST',
@@ -114,10 +114,10 @@ function Books() {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });
-      toast.success('Book deleted successfully!'); 
+      toast.success('Book deleted successfully!');
       fetchBooks();
     } catch (error) {
-      toast.error('Failed to delete book.'); 
+      toast.error('Failed to delete book.');
     }
   };
   return (
