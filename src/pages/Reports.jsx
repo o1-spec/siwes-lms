@@ -42,7 +42,7 @@ function Reports() {
 
         setReports({ mostBorrowed, activeUsers, overdue });
       } catch (error) {
-        toast.error('Failed to load reports.'); 
+        toast.error('Failed to load reports.');
       }
     };
 
@@ -52,7 +52,7 @@ function Reports() {
   return (
     <div>
       <h1 className='text-2xl font-bold mb-4'>Reports</h1>
-      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6'>
+      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mb-6'>
         <Card>
           <CardHeader>
             <CardTitle>Most Borrowed Books</CardTitle>
@@ -99,36 +99,36 @@ function Reports() {
             </Table>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Overdue Books</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>User</TableHead>
-                  <TableHead>Book</TableHead>
-                  <TableHead>Due Date</TableHead>
-                  <TableHead>Overdue Days</TableHead>
-                  <TableHead>Fine ($)</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {reports.overdue.map((item, index) => (
-                  <TableRow key={index}>
-                    <TableCell>{item.full_name}</TableCell>
-                    <TableCell>{item.title}</TableCell>
-                    <TableCell>{item.due_date}</TableCell>
-                    <TableCell>{item.overdue_days}</TableCell>
-                    <TableCell>{item.fine}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
       </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Overdue Books</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>User</TableHead>
+                <TableHead>Book</TableHead>
+                <TableHead>Due Date</TableHead>
+                <TableHead>Overdue Days</TableHead>
+                <TableHead>Fine ($)</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {reports.overdue.map((item, index) => (
+                <TableRow key={index}>
+                  <TableCell>{item.full_name}</TableCell>
+                  <TableCell>{item.title}</TableCell>
+                  <TableCell>{item.due_date}</TableCell>
+                  <TableCell>{item.overdue_days}</TableCell>
+                  <TableCell>{item.fine}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </div>
   );
 }

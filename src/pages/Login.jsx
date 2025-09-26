@@ -250,6 +250,7 @@ function Login() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value='student'>Student</SelectItem>
+                          <SelectItem value='staff'>Staff</SelectItem>
                           <SelectItem value='librarian'>Librarian</SelectItem>
                         </SelectContent>
                       </Select>

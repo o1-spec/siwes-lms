@@ -11,6 +11,7 @@ import {
   Clock,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
 function Dashboard() {
   const [stats, setStats] = useState({
@@ -22,6 +23,7 @@ function Dashboard() {
 
   const [recentActivity, setRecentActivity] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -229,25 +231,37 @@ function Dashboard() {
             Quick Actions
           </h2>
           <div className='grid grid-cols-2 gap-4'>
-            <button className='flex flex-col items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200'>
+            <button
+              onClick={() => navigate('/books')}
+              className='flex flex-col items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200'
+            >
               <Book className='w-8 h-8 text-gray-600 mb-2' />
               <span className='text-sm font-medium text-gray-700'>
                 Add Book
               </span>
             </button>
-            <button className='flex flex-col items-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors duration-200'>
+            <button
+              onClick={() => navigate('/users')}
+              className='flex flex-col items-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors duration-200'
+            >
               <Users className='w-8 h-8 text-green-600 mb-2' />
               <span className='text-sm font-medium text-green-700'>
                 Add User
               </span>
             </button>
-            <button className='flex flex-col items-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors duration-200'>
+            <button
+              onClick={() => navigate('/borrow-records')}
+              className='flex flex-col items-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors duration-200'
+            >
               <FileText className='w-8 h-8 text-purple-600 mb-2' />
               <span className='text-sm font-medium text-purple-700'>
                 New Borrow
               </span>
             </button>
-            <button className='flex flex-col items-center p-4 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors duration-200'>
+            <button
+              onClick={() => navigate('/reports')}
+              className='flex flex-col items-center p-4 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors duration-200'
+            >
               <Calendar className='w-8 h-8 text-orange-600 mb-2' />
               <span className='text-sm font-medium text-orange-700'>
                 View Reports
