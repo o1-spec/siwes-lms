@@ -1,0 +1,278 @@
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'; // Add this import
+import { useNavigate } from 'react-router-dom';
+import { BookOpen, Users, BarChart3, Shield, ArrowRight } from 'lucide-react';
+import Header from '../components/Header';
+
+function Login() {
+  const [isRegister, setIsRegister] = useState(false);
+  const [formData, setFormData] = useState({
+    full_name: '',
+    email: '',
+    password: '',
+    role: '',
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) navigate('/');
+  }, [navigate]);
+
+  const handleSubmit = async () => {
+    setIsLoading(true);
+    try {
+      const url = isRegister
+        ? 'http://localhost:5000/register'
+        : 'http://localhost:5000/login';
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (data.token) {
+        localStorage.setItem('token', data.token);
+        navigate('/');
+      } else if (data.message) {
+        alert(data.message); // For register success
+      }
+    } catch (error) {
+      console.error('Authentication error:', error);
+      alert('An error occurred. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
+
+  return (
+    <div className='min-h-screen bg-gradient-to-br from-slate-50 to-blue-50'>
+      <Header />
+
+      <div className='flex items-center justify-center px-4 py-12'>
+        <div className='w-full max-w-6xl grid lg:grid-cols-2 gap-12 items-center'>
+          {/* Left Side - Hero Content */}
+          <div className='space-y-8'>
+            <div className='space-y-4'>
+              <div className='inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium'>
+                <Shield className='w-4 h-4 mr-2' />
+                Secure Academic Platform
+              </div>
+
+              <h1 className='text-4xl lg:text-5xl font-bold text-balance leading-tight'>
+                Modern Library
+                <span className='text-primary'> Management</span>
+                <br />
+                for Academic Excellence
+              </h1>
+
+              <p className='text-lg text-muted-foreground text-pretty leading-relaxed'>
+                Streamline your library operations with our comprehensive
+                management system. Track books, manage users, and generate
+                insightful reports with ease.
+              </p>
+            </div>
+
+            {/* Feature Grid */}
+            <div className='grid grid-cols-1 sm:grid-cols-3 gap-6'>
+              <div className='flex items-center space-x-3 p-4 rounded-lg bg-white/50 border border-border/50'>
+                <div className='flex items-center justify-center w-10 h-10 bg-primary/10 rounded-lg'>
+                  <BookOpen className='w-5 h-5 text-primary' />
+                </div>
+                <div>
+                  <h3 className='font-semibold text-sm'>Book Management</h3>
+                  <p className='text-xs text-muted-foreground'>
+                    Catalog & Track
+                  </p>
+                </div>
+              </div>
+
+              <div className='flex items-center space-x-3 p-4 rounded-lg bg-white/50 border border-border/50'>
+                <div className='flex items-center justify-center w-10 h-10 bg-accent/10 rounded-lg'>
+                  <Users className='w-5 h-5 text-accent' />
+                </div>
+                <div>
+                  <h3 className='font-semibold text-sm'>User Records</h3>
+                  <p className='text-xs text-muted-foreground'>
+                    Students & Staff
+                  </p>
+                </div>
+              </div>
+
+              <div className='flex items-center space-x-3 p-4 rounded-lg bg-white/50 border border-border/50'>
+                <div className='flex items-center justify-center w-10 h-10 bg-destructive/10 rounded-lg'>
+                  <BarChart3 className='w-5 h-5 text-destructive' />
+                </div>
+                <div>
+                  <h3 className='font-semibold text-sm'>Analytics</h3>
+                  <p className='text-xs text-muted-foreground'>
+                    Reports & Insights
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Side - Login Form */}
+          <div className='flex justify-center lg:justify-end'>
+            <Card className='w-full max-w-md shadow-xl border-0 bg-white/80 backdrop-blur-sm'>
+              <CardHeader className='space-y-2 text-center'>
+                <CardTitle className='text-2xl font-bold'>
+                  {isRegister ? 'Create Account' : 'Welcome Back'}
+                </CardTitle>
+                <CardDescription className='text-muted-foreground'>
+                  {isRegister
+                    ? 'Join the academic library management system'
+                    : 'Sign in to access your library dashboard'}
+                </CardDescription>
+              </CardHeader>
+
+              <CardContent className='space-y-6'>
+                <div className='space-y-4'>
+                  {isRegister && (
+                    <div className='space-y-2'>
+                      <Label htmlFor='fullName' className='text-sm font-medium'>
+                        Full Name
+                      </Label>
+                      <Input
+                        id='fullName'
+                        placeholder='Enter your full name'
+                        value={formData.full_name}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            full_name: e.target.value,
+                          })
+                        }
+                        className='h-11'
+                      />
+                    </div>
+                  )}
+
+                  <div className='space-y-2'>
+                    <Label htmlFor='email' className='text-sm font-medium'>
+                      Email Address
+                    </Label>
+                    <Input
+                      id='email'
+                      type='email'
+                      placeholder='Enter your email'
+                      value={formData.email}
+                      onChange={(e) =>
+                        setFormData({ ...formData, email: e.target.value })
+                      }
+                      className='h-11'
+                    />
+                  </div>
+
+                  <div className='space-y-2'>
+                    <Label htmlFor='password' className='text-sm font-medium'>
+                      Password
+                    </Label>
+                    <Input
+                      id='password'
+                      type='password'
+                      placeholder='Enter your password'
+                      value={formData.password}
+                      onChange={(e) =>
+                        setFormData({ ...formData, password: e.target.value })
+                      }
+                      className='h-11'
+                    />
+                  </div>
+
+                  {isRegister && (
+                    <div className='space-y-2'>
+                      <Label htmlFor='role' className='text-sm font-medium'>
+                        Role
+                      </Label>
+                      <Select
+                        value={formData.role}
+                        onValueChange={(value) =>
+                          setFormData({ ...formData, role: value })
+                        }
+                      >
+                        <SelectTrigger className='h-11'>
+                          <SelectValue placeholder='Select your role' />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value='student'>Student</SelectItem>
+                          <SelectItem value='librarian'>Librarian</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+                </div>
+
+                <div className='space-y-4'>
+                  <Button
+                    onClick={handleSubmit}
+                    className='w-full h-11 font-medium'
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <div className='flex items-center space-x-2'>
+                        <div className='w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin' />
+                        <span>Please wait...</span>
+                      </div>
+                    ) : (
+                      <div className='flex items-center space-x-2'>
+                        <span>{isRegister ? 'Create Account' : 'Sign In'}</span>
+                        <ArrowRight className='w-4 h-4' />
+                      </div>
+                    )}
+                  </Button>
+
+                  <Button
+                    variant='ghost'
+                    onClick={() => setIsRegister(!isRegister)}
+                    className='w-full h-11 font-medium'
+                    disabled={isLoading}
+                  >
+                    {isRegister
+                      ? 'Already have an account? Sign In'
+                      : 'Need an account? Register'}
+                  </Button>
+
+                  {localStorage.getItem('token') && (
+                    <Button
+                      variant='outline'
+                      onClick={handleLogout}
+                      className='w-full h-11 font-medium bg-transparent'
+                    >
+                      Sign Out
+                    </Button>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default Login;
