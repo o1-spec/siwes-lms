@@ -203,7 +203,7 @@ function Dashboard() {
                   </div>
                   <div className='flex-1 min-w-0'>
                     <p className='text-sm font-medium text-gray-900 truncate'>
-                      Book borrowed by User #{activity.user_id}
+                      "{activity.title}" borrowed by {activity.full_name}
                     </p>
                     <p className='text-xs text-gray-500'>
                       {new Date(activity.borrow_date).toLocaleDateString()}
