@@ -28,7 +28,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog'; 
+} from '@/components/ui/alert-dialog';
 
 function Books() {
   const [books, setBooks] = useState([]);
@@ -39,6 +39,10 @@ function Books() {
   const [loading, setLoading] = useState(true);
   const [currentBookId, setCurrentBookId] = useState(null);
   const [deleteBookId, setDeleteBookId] = useState(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  const [adding, setAdding] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     author: '',
@@ -77,6 +81,7 @@ function Books() {
   };
 
   const handleAddBook = async () => {
+    setAdding(true);
     const token = localStorage.getItem('token');
     try {
       if (isEditing) {
@@ -113,6 +118,8 @@ function Books() {
       fetchBooks();
     } catch (error) {
       toast.error('Failed to save book.');
+    } finally {
+      setAdding(false);
     }
   };
 
@@ -130,6 +137,7 @@ function Books() {
   };
 
   const handleDelete = async (id) => {
+    setDeleting(true);
     const token = localStorage.getItem('token');
     try {
       await fetch(`${API_BASE_URL}/books/${id}`, {
@@ -138,17 +146,17 @@ function Books() {
       });
       toast.success('Book deleted successfully!');
       fetchBooks();
+      setDeleteModalOpen(false);
       setDeleteBookId(null);
     } catch (error) {
       toast.error('Failed to delete book.');
+    } finally {
+      setDeleting(false);
     }
   };
 
   return (
-    <div
-      className='min-h-screen bg-gradient-to-br from-slate-50 to-blue-50'
-      style={{ fontFamily: 'Poppins, sans-serif' }}
-    >
+    <div className='min-h-screen bg-gradient-to-br from-slate-50 to-blue-50'>
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
         {/* Page Header */}
         <div className='mb-8'>
@@ -334,18 +342,27 @@ function Books() {
                       <Edit3 className='w-4 h-4 mr-2' />
                       Edit
                     </button>
-                    <AlertDialog>
-                      {' '}
-                      {/* Replace the button with AlertDialog */}
+                    <AlertDialog
+                      open={deleteModalOpen}
+                      onOpenChange={setDeleteModalOpen}
+                    >
                       <AlertDialogTrigger asChild>
-                        <button className='flex-1 inline-flex items-center justify-center px-3 py-2 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 transition-colors text-sm font-medium'>
+                        <button
+                          onClick={() => {
+                            setDeleteBookId(book.book_id);
+                            setDeleteModalOpen(true);
+                          }}
+                          className='flex-1 inline-flex items-center justify-center px-3 py-2 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 transition-colors text-sm font-medium'
+                        >
                           <Trash2 className='w-4 h-4 mr-2' />
                           Delete
                         </button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
-                          <AlertDialogTitle>Are you sure? You are about to delete {book.title}</AlertDialogTitle>
+                          <AlertDialogTitle>
+                            Are you sure? You are about to delete {book.title}
+                          </AlertDialogTitle>
                           <AlertDialogDescription>
                             This action cannot be undone. This will permanently
                             delete the book.
@@ -354,10 +371,18 @@ function Books() {
                         <AlertDialogFooter>
                           <AlertDialogCancel>Cancel</AlertDialogCancel>
                           <AlertDialogAction
-                            onClick={() => handleDelete(book.book_id)}
+                            onClick={() => handleDelete(deleteBookId)}
+                            disabled={deleting}
                             className='bg-red-600 hover:bg-red-700'
                           >
-                            Delete
+                            {deleting ? (
+                              <>
+                                <Loader2 className='w-4 h-4 animate-spin mr-2' />
+                                Deleting...
+                              </>
+                            ) : (
+                              'Delete'
+                            )}
                           </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>
@@ -503,14 +528,25 @@ function Books() {
               <button
                 onClick={() => setIsDialogOpen(false)}
                 className='flex-1 px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors font-medium'
+                disabled={adding}
               >
                 Cancel
               </button>
               <button
                 onClick={handleAddBook}
-                className='flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium'
+                disabled={adding}
+                className='flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed'
               >
-                {isEditing ? 'Update Book' : 'Add Book'}
+                {adding ? (
+                  <>
+                    <Loader2 className='w-4 h-4 animate-spin mr-2' />
+                    {isEditing ? 'Updating...' : 'Adding...'}
+                  </>
+                ) : isEditing ? (
+                  'Update Book'
+                ) : (
+                  'Add Book'
+                )}
               </button>
             </div>
           </div>
