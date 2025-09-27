@@ -53,10 +53,13 @@ function Login() {
       const url = isRegister
         ? `${API_BASE_URL}/register`
         : `${API_BASE_URL}/login`;
+      const payload = isRegister
+        ? { ...formData, role: 'librarian' }
+        : formData;
       const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
       const data = await res.json();
       if (data.token) {
@@ -70,7 +73,7 @@ function Login() {
           setFormData({ full_name: '', email: '', password: '', role: '' });
           setIsRegister(true);
           toast.success('Login successful!');
-          navigate('/'); 
+          navigate('/');
         } else {
           toast.error('Failed to fetch user data. Please try again.');
           localStorage.removeItem('token');
@@ -258,18 +261,11 @@ function Login() {
                       <Label htmlFor='role' className='text-sm font-medium'>
                         Role
                       </Label>
-                      <Select
-                        value={formData.role}
-                        onValueChange={(value) =>
-                          setFormData({ ...formData, role: value })
-                        }
-                      >
+                      <Select value='librarian' disabled>
                         <SelectTrigger className='h-10 md:h-11'>
-                          <SelectValue placeholder='Select your role' />
+                          <SelectValue placeholder='Librarian' />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value='student'>Student</SelectItem>
-                          <SelectItem value='staff'>Staff</SelectItem>
                           <SelectItem value='librarian'>Librarian</SelectItem>
                         </SelectContent>
                       </Select>
