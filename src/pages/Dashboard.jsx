@@ -16,19 +16,15 @@ import API_BASE_URL from '@/api';
 
 function Dashboard() {
   const [stats, setStats] = useState({
-    totalBooks: 3,
-    totalUsers: 5,
-    activeBorrows: 1,
+    totalBooks: 0,
+    totalUsers: 0,
+    activeBorrows: 0,
     overdueBooks: 0,
   });
 
-  const [recentActivity, setRecentActivity] = useState([
-    {
-      user_id: 1,
-      borrow_date: '2025-09-25',
-    },
-  ]);
-  const [loading, setLoading] = useState(false);
+  const [recentActivity, setRecentActivity] = useState([]);
+
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -54,15 +50,35 @@ function Dashboard() {
           activeBorrows: borrows.filter((b) => !b.return_date).length,
           overdueBooks: overdue.length,
         });
-
-        const recent = borrows
-          .sort(
-            (a, b) =>
-              new Date(b.borrow_date).getTime() -
-              new Date(a.borrow_date).getTime()
-          )
+        const activities = [
+          ...books.slice(-5).map((book) => ({
+            type: 'book',
+            message: `Book "${book.title}" added`,
+            date: new Date(book.created_at),
+            icon: Book,
+            color: 'text-gray-600',
+            bgColor: 'bg-gray-100',
+          })),
+          ...users.slice(-5).map((user) => ({
+            type: 'user',
+            message: `User "${user.full_name}" registered`,
+            date: new Date(user.created_at),
+            icon: Users,
+            color: 'text-green-600',
+            bgColor: 'bg-green-50',
+          })),
+          ...borrows.slice(-5).map((borrow) => ({
+            type: 'borrow',
+            message: `"${borrow.title}" borrowed by ${borrow.full_name}`,
+            date: new Date(borrow.borrow_date),
+            icon: FileText,
+            color: 'text-purple-600',
+            bgColor: 'bg-purple-50',
+          })),
+        ]
+          .sort((a, b) => b.date - a.date)
           .slice(0, 5);
-        setRecentActivity(recent);
+        setRecentActivity(activities);
         setLoading(false);
       })
       .catch(() => {
@@ -194,24 +210,29 @@ function Dashboard() {
           </div>
           <div className='space-y-4'>
             {recentActivity.length > 0 ? (
-              recentActivity.map((activity, index) => (
-                <div
-                  key={index}
-                  className='flex items-center space-x-3 p-3 bg-gray-50 rounded-lg'
-                >
-                  <div className='w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0'>
-                    <FileText className='w-4 h-4 text-gray-600' />
+              recentActivity.map((activity, index) => {
+                const Icon = activity.icon;
+                return (
+                  <div
+                    key={index}
+                    className='flex items-center space-x-3 p-3 bg-gray-50 rounded-lg'
+                  >
+                    <div
+                      className={`w-8 h-8 ${activity.bgColor} rounded-full flex items-center justify-center flex-shrink-0`}
+                    >
+                      <Icon className={`w-4 h-4 ${activity.color}`} />
+                    </div>
+                    <div className='flex-1 min-w-0'>
+                      <p className='text-sm font-medium text-gray-900 truncate'>
+                        {activity.message}
+                      </p>
+                      <p className='text-xs text-gray-500'>
+                        {activity.date.toLocaleDateString()}
+                      </p>
+                    </div>
                   </div>
-                  <div className='flex-1 min-w-0'>
-                    <p className='text-sm font-medium text-gray-900 truncate'>
-                      "{activity.title}" borrowed by {activity.full_name}
-                    </p>
-                    <p className='text-xs text-gray-500'>
-                      {new Date(activity.borrow_date).toLocaleDateString()}
-                    </p>
-                  </div>
-                </div>
-              ))
+                );
+              })
             ) : (
               <p className='text-gray-500 text-center py-4'>
                 No recent activity
