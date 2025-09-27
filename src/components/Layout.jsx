@@ -26,9 +26,9 @@ import {
 } from '@/components/ui/alert-dialog';
 
 function Layout({ children }) {
-  const [sidebarOpen, setSidebarOpen] = useState(false); // Default to false for mobile-first
+  const [sidebarOpen, setSidebarOpen] = useState(false); 
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const [isMobile, setIsMobile] = useState(false); // Track mobile state
+  const [isMobile, setIsMobile] = useState(false); 
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -37,9 +37,9 @@ function Layout({ children }) {
       const mobile = window.innerWidth < 768;
       setIsMobile(mobile);
       if (!mobile) {
-        setSidebarOpen(true); // Auto-open on desktop
+        setSidebarOpen(true); 
       } else {
-        setSidebarOpen(false); // Auto-close on mobile
+        setSidebarOpen(false); 
       }
     };
 

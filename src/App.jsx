@@ -14,15 +14,51 @@ import Login from './pages/Login';
 import { ToastProvider } from './components/ui/toast';
 import Profile from './pages/Profile';
 import NotFound from './pages/NotFound';
+import API_BASE_URL from './api';
+import { useEffect, useState } from 'react';
 
 function App() {
   const token = localStorage.getItem('token');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (token) {
+      fetch(`${API_BASE_URL}/users`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((res) => {
+          if (res.ok) {
+            setIsAuthenticated(true);
+          } else {
+            throw new Error('Invalid token');
+          }
+        })
+        .catch(() => {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          setIsAuthenticated(false);
+        })
+        .finally(() => setLoading(false));
+    } else {
+      setLoading(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  if (loading) {
+    return (
+      <div className='flex items-center justify-center h-64'>
+        <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-black'></div>
+      </div>
+    );
+  }
 
   return (
     <Router>
       <Routes>
         <Route path='/login' element={<Login />} />
-        {token ? (
+        {isAuthenticated ? (
           <>
             <Route
               path='/'
