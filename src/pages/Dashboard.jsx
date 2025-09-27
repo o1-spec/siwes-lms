@@ -21,6 +21,12 @@ function Dashboard() {
     activeBorrows: 0,
     overdueBooks: 0,
   });
+  const [previousStats, setPreviousStats] = useState({
+    totalBooks: 0,
+    totalUsers: 0,
+    activeBorrows: 0,
+    overdueBooks: 0,
+  });
 
   const [recentActivity, setRecentActivity] = useState([]);
 
@@ -42,14 +48,18 @@ function Dashboard() {
       fetch(`${API_BASE_URL}/reports/overdue`, {
         headers: { Authorization: `Bearer ${token}` },
       }).then((res) => res.json()),
+      fetch(`${API_BASE_URL}/stats/previous`, {
+        headers: { Authorization: `Bearer ${token}` },
+      }).then((res) => res.json()),
     ])
-      .then(([books, users, borrows, overdue]) => {
+      .then(([books, users, borrows, overdue, previous]) => {
         setStats({
           totalBooks: books.length,
           totalUsers: users.length,
           activeBorrows: borrows.filter((b) => !b.return_date).length,
           overdueBooks: overdue.length,
         });
+        setPreviousStats(previous);
         const activities = [
           ...books.slice(-5).map((book) => ({
             type: 'book',
@@ -87,6 +97,15 @@ function Dashboard() {
       });
   }, []);
 
+  const calculateChange = (current, previous) => {
+    if (previous === 0) return { change: '0', type: 'neutral' };
+    const percent = (((current - previous) / previous) * 100).toFixed(0);
+    return {
+      change: `${percent > 0 ? '+' : ''}${percent}%`,
+      type: percent > 0 ? 'positive' : percent < 0 ? 'negative' : 'neutral',
+    };
+  };
+
   const statCards = [
     {
       title: 'Total Books',
@@ -95,8 +114,7 @@ function Dashboard() {
       color: 'from-gray-700 to-gray-800',
       bgColor: 'bg-gray-100',
       textColor: 'text-gray-700',
-      change: '+12%',
-      changeType: 'positive',
+      ...calculateChange(stats.totalBooks, previousStats.totalBooks),
     },
     {
       title: 'Total Users',
@@ -105,6 +123,7 @@ function Dashboard() {
       color: 'from-green-500 to-green-600',
       bgColor: 'bg-green-50',
       textColor: 'text-green-700',
+      ...calculateChange(stats.totalUsers, previousStats.totalUsers),
     },
     {
       title: 'Active Borrows',
@@ -113,6 +132,7 @@ function Dashboard() {
       color: 'from-purple-500 to-purple-600',
       bgColor: 'bg-purple-50',
       textColor: 'text-purple-700',
+      ...calculateChange(stats.activeBorrows, previousStats.activeBorrows),
     },
     {
       title: 'Overdue Books',
@@ -121,8 +141,24 @@ function Dashboard() {
       color: 'from-red-500 to-red-600',
       bgColor: 'bg-red-50',
       textColor: 'text-red-700',
+      ...calculateChange(stats.overdueBooks, previousStats.overdueBooks),
     },
   ];
+
+  const handleInsertStats = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      await fetch(`${API_BASE_URL}/stats/insert-daily`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      toast.success('Daily stats inserted successfully!');
+      // window.location.reload();
+      // eslint-disable-next-line no-unused-vars
+    } catch (error) {
+      toast.error('Failed to insert daily stats.');
+    }
+  };
 
   if (loading) {
     return (
@@ -162,7 +198,7 @@ function Dashboard() {
               key={index}
               className='bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6 hover:shadow-md transition-shadow duration-200'
             >
-              {/* <div className='flex items-center justify-between mb-4'>
+              <div className='flex items-center justify-between mb-4'>
                 <div
                   className={`w-10 h-10 sm:w-12 sm:h-12 ${card.bgColor} rounded-lg flex items-center justify-center`}
                 >
@@ -170,15 +206,17 @@ function Dashboard() {
                 </div>
                 <div
                   className={`flex items-center space-x-1 text-xs sm:text-sm ${
-                    card.changeType === 'positive'
+                    card.type === 'positive'
                       ? 'text-green-600'
-                      : 'text-red-600'
+                      : card.type === 'negative'
+                      ? 'text-red-600'
+                      : 'text-gray-600'
                   }`}
                 >
                   <TrendingUp className='w-3 h-3 sm:w-4 sm:h-4' />
                   <span>{card.change}</span>
                 </div>
-              </div> */}
+              </div>
               <div>
                 <h3 className='text-xs sm:text-sm font-medium text-gray-600 mb-1'>
                   {card.title}
@@ -275,6 +313,17 @@ function Dashboard() {
               <Calendar className='w-6 h-6 sm:w-8 sm:h-8 text-orange-600 mb-2' />
               <span className='text-xs sm:text-sm font-medium text-orange-700 text-center'>
                 View Reports
+              </span>
+            </button>
+          </div>
+          <div className='mt-4'>
+            <button
+              onClick={handleInsertStats}
+              className='w-full flex items-center justify-center p-3 sm:p-4 bg-blue-50 cursor-pointer rounded-lg hover:bg-blue-100 transition-colors duration-200'
+            >
+              <TrendingUp className='w-6 h-6 sm:w-8 sm:h-8 text-blue-600 mr-2' />
+              <span className='text-xs sm:text-sm font-medium text-blue-700 text-center'>
+                Update Daily Stats
               </span>
             </button>
           </div>
