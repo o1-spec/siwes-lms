@@ -45,6 +45,7 @@ import { Loader2 } from 'lucide-react';
 function BorrowRecords() {
   const [records, setRecords] = useState([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [deletingRecordId, setDeletingRecordId] = useState(null);
   const [formData, setFormData] = useState({
     user_name: '',
     book_id: '',
@@ -124,6 +125,7 @@ function BorrowRecords() {
   };
 
   const handleDelete = async (id) => {
+    setDeletingRecordId(id);
     const token = localStorage.getItem('token');
     try {
       await fetch(`${API_BASE_URL}/borrow_records/${id}`, {
@@ -134,6 +136,8 @@ function BorrowRecords() {
       fetchRecords();
     } catch (error) {
       toast.error('Failed to delete record.');
+    } finally {
+      setDeletingRecordId(null);
     }
   };
 
@@ -216,11 +220,11 @@ function BorrowRecords() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>User ID</TableHead>
-              <TableHead>Book ID</TableHead>
+              <TableHead>Borrower Name</TableHead>
+              <TableHead>Book Title</TableHead>
               <TableHead>Borrow Date</TableHead>
               <TableHead>Due Date</TableHead>
-              <TableHead>Returned</TableHead>
+              <TableHead>Status</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -228,12 +232,24 @@ function BorrowRecords() {
             {records.map((record) => (
               <TableRow key={record.record_id}>
                 <TableCell>{record.user_name}</TableCell>
-                <TableCell>{record.book_id}</TableCell>
-                <TableCell>{record.borrow_date}</TableCell>
-                <TableCell>{record.due_date}</TableCell>
-                <TableCell>{record.returned ? 'Yes' : 'No'}</TableCell>
+                <TableCell>{record.title}</TableCell>
                 <TableCell>
-                  {!record.returned && (
+                  {new Date(record.borrow_date).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                  })}
+                </TableCell>
+                <TableCell>
+                  {new Date(record.due_date).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                  })}
+                </TableCell>
+                <TableCell>{record.status}</TableCell>
+                <TableCell>
+                  {record.status !== 'returned' && (
                     <Button onClick={() => handleReturn(record.record_id)}>
                       Return
                     </Button>
@@ -255,8 +271,11 @@ function BorrowRecords() {
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
                         <AlertDialogAction
                           onClick={() => handleDelete(record.record_id)}
+                          disabled={deletingRecordId === record.record_id}
                         >
-                          Delete
+                          {deletingRecordId === record.record_id
+                            ? 'Deleting...'
+                            : 'Delete'}
                         </AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>
