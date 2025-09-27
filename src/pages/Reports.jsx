@@ -96,7 +96,7 @@ function Reports() {
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>Active Users</CardTitle>
+            <CardTitle>Active Borrowers</CardTitle>
           </CardHeader>
           <CardContent>
             {loading ? (

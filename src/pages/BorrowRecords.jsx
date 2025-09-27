@@ -45,6 +45,7 @@ import { Loader2 } from 'lucide-react';
 function BorrowRecords() {
   const [records, setRecords] = useState([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [returningId, setReturningId] = useState(null);
   const [deletingRecordId, setDeletingRecordId] = useState(null);
   const [formData, setFormData] = useState({
     user_name: '',
@@ -84,6 +85,7 @@ function BorrowRecords() {
   };
 
   const handleReturn = async (id) => {
+    setReturningId(id);
     const token = localStorage.getItem('token');
     try {
       await fetch(`${API_BASE_URL}/borrow_records/${id}/return`, {
@@ -94,6 +96,8 @@ function BorrowRecords() {
       fetchRecords();
     } catch (_error) {
       toast.error('Failed to return book.');
+    } finally {
+      setReturningId(null);
     }
   };
 
@@ -223,6 +227,7 @@ function BorrowRecords() {
               <TableHead>Borrower Name</TableHead>
               <TableHead>Book Title</TableHead>
               <TableHead>Borrow Date</TableHead>
+              <TableHead>Returned Date</TableHead>
               <TableHead>Due Date</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Actions</TableHead>
@@ -241,6 +246,15 @@ function BorrowRecords() {
                   })}
                 </TableCell>
                 <TableCell>
+                  {record.return_date
+                    ? new Date(record.return_date).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric',
+                      })
+                    : 'N/A'}
+                </TableCell>
+                <TableCell>
                   {new Date(record.due_date).toLocaleDateString('en-US', {
                     month: 'short',
                     day: 'numeric',
@@ -250,9 +264,38 @@ function BorrowRecords() {
                 <TableCell>{record.status}</TableCell>
                 <TableCell>
                   {record.status !== 'returned' && (
-                    <Button onClick={() => handleReturn(record.record_id)}>
-                      Return
-                    </Button>
+                    <AlertDialog>
+                      {' '}
+                      {/* Add AlertDialog */}
+                      <AlertDialogTrigger asChild>
+                        <Button>Return</Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Confirm Return</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to mark this book as returned?
+                            This action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => handleReturn(record.record_id)}
+                            disabled={returningId === record.record_id}
+                          >
+                            {returningId === record.record_id ? (
+                              <>
+                                <Loader2 className='w-4 h-4 animate-spin mr-2' />
+                                Returning...
+                              </>
+                            ) : (
+                              'Return'
+                            )}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   )}
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
