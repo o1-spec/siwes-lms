@@ -18,6 +18,17 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import API_BASE_URL from '@/api';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'; 
 
 function Books() {
   const [books, setBooks] = useState([]);
@@ -27,6 +38,7 @@ function Books() {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [currentBookId, setCurrentBookId] = useState(null);
+  const [deleteBookId, setDeleteBookId] = useState(null);
   const [formData, setFormData] = useState({
     title: '',
     author: '',
@@ -126,10 +138,12 @@ function Books() {
       });
       toast.success('Book deleted successfully!');
       fetchBooks();
+      setDeleteBookId(null);
     } catch (error) {
       toast.error('Failed to delete book.');
     }
   };
+
   return (
     <div
       className='min-h-screen bg-gradient-to-br from-slate-50 to-blue-50'
@@ -320,21 +334,34 @@ function Books() {
                       <Edit3 className='w-4 h-4 mr-2' />
                       Edit
                     </button>
-                    <button
-                      onClick={() => {
-                        if (
-                          window.confirm(
-                            'Are you sure you want to delete this book?'
-                          )
-                        ) {
-                          handleDelete(book.book_id);
-                        }
-                      }}
-                      className='flex-1 inline-flex items-center justify-center px-3 py-2 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 transition-colors text-sm font-medium'
-                    >
-                      <Trash2 className='w-4 h-4 mr-2' />
-                      Delete
-                    </button>
+                    <AlertDialog>
+                      {' '}
+                      {/* Replace the button with AlertDialog */}
+                      <AlertDialogTrigger asChild>
+                        <button className='flex-1 inline-flex items-center justify-center px-3 py-2 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 transition-colors text-sm font-medium'>
+                          <Trash2 className='w-4 h-4 mr-2' />
+                          Delete
+                        </button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Are you sure? You are about to delete {book.title}</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action cannot be undone. This will permanently
+                            delete the book.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => handleDelete(book.book_id)}
+                            className='bg-red-600 hover:bg-red-700'
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </div>
                 </div>
               </div>
