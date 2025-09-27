@@ -117,8 +117,8 @@ function Reports() {
                 </TableHeader>
                 <TableBody>
                   {reports.activeUsers.map((user) => (
-                    <TableRow key={user.user_id}>
-                      <TableCell>{user.full_name}</TableCell>
+                    <TableRow key={user.user_name}>
+                      <TableCell>{user.user_name}</TableCell> 
                       <TableCell>{user.borrow_count}</TableCell>
                     </TableRow>
                   ))}

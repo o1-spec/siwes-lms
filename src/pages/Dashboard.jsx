@@ -105,8 +105,6 @@ function Dashboard() {
       color: 'from-green-500 to-green-600',
       bgColor: 'bg-green-50',
       textColor: 'text-green-700',
-      change: '+8%',
-      changeType: 'positive',
     },
     {
       title: 'Active Borrows',
@@ -115,8 +113,6 @@ function Dashboard() {
       color: 'from-purple-500 to-purple-600',
       bgColor: 'bg-purple-50',
       textColor: 'text-purple-700',
-      change: '+15%',
-      changeType: 'positive',
     },
     {
       title: 'Overdue Books',
@@ -125,8 +121,6 @@ function Dashboard() {
       color: 'from-red-500 to-red-600',
       bgColor: 'bg-red-50',
       textColor: 'text-red-700',
-      change: '-5%',
-      changeType: 'negative',
     },
   ];
 
@@ -168,7 +162,7 @@ function Dashboard() {
               key={index}
               className='bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6 hover:shadow-md transition-shadow duration-200'
             >
-              <div className='flex items-center justify-between mb-4'>
+              {/* <div className='flex items-center justify-between mb-4'>
                 <div
                   className={`w-10 h-10 sm:w-12 sm:h-12 ${card.bgColor} rounded-lg flex items-center justify-center`}
                 >
@@ -184,7 +178,7 @@ function Dashboard() {
                   <TrendingUp className='w-3 h-3 sm:w-4 sm:h-4' />
                   <span>{card.change}</span>
                 </div>
-              </div>
+              </div> */}
               <div>
                 <h3 className='text-xs sm:text-sm font-medium text-gray-600 mb-1'>
                   {card.title}
