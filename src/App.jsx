@@ -60,6 +60,7 @@ function App() {
         <Route path='/login' element={<Login />} />
         {isAuthenticated ? (
           <>
+            <Route path='/login' element={<Navigate to='/' />} />
             <Route
               path='/'
               element={
@@ -111,7 +112,10 @@ function App() {
             <Route path='*' element={<NotFound />} />
           </>
         ) : (
-          <Route path='*' element={<Navigate to='/login' />} />
+          <>
+            <Route path='/login' element={<Login />} />
+            <Route path='*' element={<Navigate to='/login' />} />
+          </>
         )}
       </Routes>
       <ToastProvider />
