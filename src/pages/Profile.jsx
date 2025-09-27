@@ -11,7 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog'; // Add Dialog
+} from '@/components/ui/dialog'; 
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { toast } from 'sonner';
 import { ArrowLeft, User, Lock, Mail, Shield, Edit, Key } from 'lucide-react';
@@ -20,8 +20,8 @@ import API_BASE_URL from '@/api';
 function Profile() {
   const navigate = useNavigate();
   const [user, setUser] = useState({});
-  const [isEditing, setIsEditing] = useState(false); // For edit mode
-  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false); // For password modal
+  const [isEditing, setIsEditing] = useState(false); 
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false); 
   const [formData, setFormData] = useState({
     full_name: '',
     email: '',
