@@ -13,6 +13,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 import API_BASE_URL from '@/api';
+import { Loader2 } from 'lucide-react';
 
 function Reports() {
   const [reports, setReports] = useState({
@@ -20,9 +21,11 @@ function Reports() {
     activeUsers: [],
     overdue: [],
   });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchReports = async () => {
+      setLoading(true);
       const token = localStorage.getItem('token');
       try {
         const [mostBorrowedRes, activeUsersRes, overdueRes] = await Promise.all(
@@ -46,6 +49,8 @@ function Reports() {
         setReports({ mostBorrowed, activeUsers, overdue });
       } catch (error) {
         toast.error('Failed to load reports.');
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -61,22 +66,32 @@ function Reports() {
             <CardTitle>Most Borrowed Books</CardTitle>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Book Title</TableHead>
-                  <TableHead>Borrow Count</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {reports.mostBorrowed.map((book) => (
-                  <TableRow key={book.book_id}>
-                    <TableCell>{book.title}</TableCell>
-                    <TableCell>{book.borrow_count}</TableCell>
+            {loading ? (
+              <div className='flex justify-center items-center py-8'>
+                <Loader2 className='w-8 h-8 animate-spin text-gray-500' />
+              </div>
+            ) : reports.mostBorrowed.length === 0 ? (
+              <p className='text-center text-gray-500 py-8'>
+                No most borrowed books found
+              </p>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Book Title</TableHead>
+                    <TableHead>Borrow Count</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {reports.mostBorrowed.map((book) => (
+                    <TableRow key={book.book_id}>
+                      <TableCell>{book.title}</TableCell>
+                      <TableCell>{book.borrow_count}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
           </CardContent>
         </Card>
         <Card>
@@ -84,22 +99,33 @@ function Reports() {
             <CardTitle>Active Users</CardTitle>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>User Name</TableHead>
-                  <TableHead>Borrows</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {reports.activeUsers.map((user) => (
-                  <TableRow key={user.user_id}>
-                    <TableCell>{user.full_name}</TableCell>
-                    <TableCell>{user.borrow_count}</TableCell>
+            {loading ? (
+              <div className='flex justify-center items-center py-8'>
+                <Loader2 className='w-8 h-8 animate-spin text-gray-500' />
+              </div>
+            ) : reports.activeUsers.length === 0 ? (
+              <p className='text-center text-gray-500 py-8'>
+                No active users found
+              </p>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>User Name</TableHead>
+                    <TableHead>Borrows</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {reports.activeUsers.map((user) => (
+                    <TableRow key={user.user_id}>
+                      <TableCell>{user.full_name}</TableCell>
+                      <TableCell>{user.borrow_count}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+            s
           </CardContent>
         </Card>
       </div>
@@ -108,28 +134,38 @@ function Reports() {
           <CardTitle>Overdue Books</CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>User</TableHead>
-                <TableHead>Book</TableHead>
-                <TableHead>Due Date</TableHead>
-                <TableHead>Overdue Days</TableHead>
-                <TableHead>Fine ($)</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {reports.overdue.map((item, index) => (
-                <TableRow key={index}>
-                  <TableCell>{item.full_name}</TableCell>
-                  <TableCell>{item.title}</TableCell>
-                  <TableCell>{item.due_date}</TableCell>
-                  <TableCell>{item.overdue_days}</TableCell>
-                  <TableCell>{item.fine}</TableCell>
+          {loading ? (
+            <div className='flex justify-center items-center py-8'>
+              <Loader2 className='w-8 h-8 animate-spin text-gray-500' />
+            </div>
+          ) : reports.overdue.length === 0 ? (
+            <p className='text-center text-gray-500 py-8'>
+              No overdue books found
+            </p>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>User</TableHead>
+                  <TableHead>Book</TableHead>
+                  <TableHead>Due Date</TableHead>
+                  <TableHead>Overdue Days</TableHead>
+                  {/* <TableHead>Fine ($)</TableHead> */}
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {reports.overdue.map((item, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{item.full_name}</TableCell>
+                    <TableCell>{item.title}</TableCell>
+                    <TableCell>{item.due_date}</TableCell>
+                    <TableCell>{item.overdue_days}</TableCell>
+                    {/* <TableCell>{item.fine}</TableCell> */}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </CardContent>
       </Card>
     </div>
