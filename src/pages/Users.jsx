@@ -46,6 +46,7 @@ function Users() {
     email: '',
     role: '',
   });
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     fetchUsers();
@@ -112,6 +113,7 @@ function Users() {
   };
 
   const handleDelete = async (id) => {
+    setDeleting(true);
     const token = localStorage.getItem('token');
     try {
       await fetch(`${API_BASE_URL}/users/${id}`, {
@@ -119,8 +121,11 @@ function Users() {
         headers: { Authorization: `Bearer ${token}` },
       });
       toast.success('User deleted successfully!');
+      fetchUsers();
     } catch (error) {
       toast.error('Failed to delete user.');
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -225,8 +230,9 @@ function Users() {
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
                         <AlertDialogAction
                           onClick={() => handleDelete(user.user_id)}
+                          disabled={deleting} 
                         >
-                          Delete
+                          {deleting ? 'Deleting...' : 'Delete'} 
                         </AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>
