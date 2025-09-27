@@ -125,7 +125,7 @@ function Reports() {
                 </TableBody>
               </Table>
             )}
-            s
+
           </CardContent>
         </Card>
       </div>

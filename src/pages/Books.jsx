@@ -18,17 +18,17 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import API_BASE_URL from '@/api';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
+// import {
+//   AlertDialog,
+//   AlertDialogAction,
+//   AlertDialogCancel,
+//   AlertDialogContent,
+//   AlertDialogDescription,
+//   AlertDialogFooter,
+//   AlertDialogHeader,
+//   AlertDialogTitle,
+//   AlertDialogTrigger,
+// } from '@/components/ui/alert-dialog';
 
 function Books() {
   const [books, setBooks] = useState([]);
@@ -41,7 +41,7 @@ function Books() {
   const [deleteBookId, setDeleteBookId] = useState(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
-
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [adding, setAdding] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
@@ -135,7 +135,6 @@ function Books() {
     setIsEditing(true);
     setIsDialogOpen(true);
   };
-
   const handleDelete = async (id) => {
     setDeleting(true);
     const token = localStorage.getItem('token');
@@ -146,7 +145,7 @@ function Books() {
       });
       toast.success('Book deleted successfully!');
       fetchBooks();
-      setDeleteModalOpen(false);
+      setDeleteDialogOpen(false);
       setDeleteBookId(null);
     } catch (error) {
       toast.error('Failed to delete book.');
@@ -342,51 +341,16 @@ function Books() {
                       <Edit3 className='w-4 h-4 mr-2' />
                       Edit
                     </button>
-                    <AlertDialog
-                      open={deleteModalOpen}
-                      onOpenChange={setDeleteModalOpen}
+                    <button
+                      onClick={() => {
+                        setDeleteBookId(book.book_id);
+                        setDeleteDialogOpen(true);
+                      }}
+                      className='flex-1 inline-flex items-center justify-center px-3 py-2 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 transition-colors text-sm font-medium'
                     >
-                      <AlertDialogTrigger asChild>
-                        <button
-                          onClick={() => {
-                            setDeleteBookId(book.book_id);
-                            setDeleteModalOpen(true);
-                          }}
-                          className='flex-1 inline-flex items-center justify-center px-3 py-2 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 transition-colors text-sm font-medium'
-                        >
-                          <Trash2 className='w-4 h-4 mr-2' />
-                          Delete
-                        </button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>
-                            Are you sure? You are about to delete {book.title}
-                          </AlertDialogTitle>
-                          <AlertDialogDescription>
-                            This action cannot be undone. This will permanently
-                            delete the book.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => handleDelete(deleteBookId)}
-                            disabled={deleting}
-                            className='bg-red-600 hover:bg-red-700'
-                          >
-                            {deleting ? (
-                              <>
-                                <Loader2 className='w-4 h-4 animate-spin mr-2' />
-                                Deleting...
-                              </>
-                            ) : (
-                              'Delete'
-                            )}
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                      <Trash2 className='w-4 h-4 mr-2' />
+                      Delete
+                    </button>
                   </div>
                 </div>
               </div>
@@ -546,6 +510,49 @@ function Books() {
                   'Update Book'
                 ) : (
                   'Add Book'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {deleteDialogOpen && (
+        <div className='fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50'>
+          <div className='bg-white rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto'>
+            <div className='p-6 border-b border-border'>
+              <h2 className='text-xl font-semibold text-foreground'>
+                Delete Book
+              </h2>
+              <p className='text-sm text-muted-foreground mt-1'>
+                Are you sure you want to delete this book? This action cannot be
+                undone.
+              </p>
+            </div>
+            <div className='p-6'>
+              <p className='text-foreground'>
+                Book: {books.find((b) => b.book_id === deleteBookId)?.title}
+              </p>
+            </div>
+            <div className='p-6 border-t border-border flex gap-3'>
+              <button
+                onClick={() => setDeleteDialogOpen(false)}
+                className='flex-1 px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors font-medium'
+                disabled={deleting}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleDelete(deleteBookId)}
+                disabled={deleting}
+                className='flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed'
+              >
+                {deleting ? (
+                  <>
+                    <Loader2 className='w-4 h-4 animate-spin mr-2' />
+                    Deleting...
+                  </>
+                ) : (
+                  'Delete'
                 )}
               </button>
             </div>
