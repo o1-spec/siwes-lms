@@ -142,7 +142,7 @@ function Login() {
                 </div>
               </div>
 
-              <div className='flex items-center space-x-3 p-3 md:p-4 rounded-lg bg-white/50 border border-border/50'>
+              {/* <div className='flex items-center space-x-3 p-3 md:p-4 rounded-lg bg-white/50 border border-border/50'>
                 <div className='flex items-center justify-center w-8 h-8 md:w-10 md:h-10 bg-accent/10 rounded-lg'>
                   <Users className='w-4 h-4 md:w-5 md:h-5 text-accent' />
                 </div>
@@ -154,7 +154,7 @@ function Login() {
                     Students & Staff
                   </p>
                 </div>
-              </div>
+              </div> */}
 
               <div className='flex items-center space-x-3 p-3 md:p-4 rounded-lg bg-white/50 border border-border/50'>
                 <div className='flex items-center justify-center w-8 h-8 md:w-10 md:h-10 bg-destructive/10 rounded-lg'>
