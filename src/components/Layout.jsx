@@ -24,6 +24,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import API_BASE_URL from '@/api';
 
 function Layout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false); // Default to false for mobile-first
@@ -54,14 +55,31 @@ function Layout({ children }) {
     }
   }, [location.pathname, isMobile]);
 
+  // const handleLogout = async () => {
+  //   setIsLoggingOut(true);
+  //   localStorage.removeItem('token');
+  //   localStorage.removeItem('user');
+  //   setTimeout(() => {
+  //     navigate('/login');
+  //     setIsLoggingOut(false);
+  //   }, 500);
+  // };
+
   const handleLogout = async () => {
     setIsLoggingOut(true);
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    setTimeout(() => {
+    try {
+      await fetch(`${API_BASE_URL}/logout`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      });
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
       navigate('/login');
       setIsLoggingOut(false);
-    }, 500);
+    }
   };
 
   const user = JSON.parse(localStorage.getItem('user') || '{}');
