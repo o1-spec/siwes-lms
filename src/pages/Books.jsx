@@ -14,6 +14,7 @@ import {
   Hash,
   User,
   Copy,
+  Loader2,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import API_BASE_URL from '@/api';
@@ -24,6 +25,7 @@ function Books() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [currentBookId, setCurrentBookId] = useState(null);
   const [formData, setFormData] = useState({
     title: '',
@@ -48,11 +50,18 @@ function Books() {
   }, [books, searchTerm]);
 
   const fetchBooks = async () => {
+    setLoading(true);
     const token = localStorage.getItem('token');
-    const data = await fetch(`${API_BASE_URL}/books`, {
-      headers: { Authorization: `Bearer ${token}` },
-    }).then((res) => res.json());
-    setBooks(data);
+    try {
+      const data = await fetch(`${API_BASE_URL}/books`, {
+        headers: { Authorization: `Bearer ${token}` },
+      }).then((res) => res.json());
+      setBooks(data);
+    } catch (error) {
+      toast.error('Failed to load books.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleAddBook = async () => {
@@ -166,7 +175,7 @@ function Books() {
             <div className='flex items-center justify-between'>
               <div>
                 <p className='text-sm font-medium text-muted-foreground'>
-                  Available
+                  Available Copies
                 </p>
                 <p className='text-2xl font-bold text-green-600'>
                   {books.reduce((sum, book) => sum + book.copies_available, 0)}
@@ -198,12 +207,14 @@ function Books() {
             <div className='flex items-center justify-between'>
               <div>
                 <p className='text-sm font-medium text-muted-foreground'>
-                  Categories
+                  Published Years
                 </p>
-                <p className='text-2xl font-bold text-orange-600'>12</p>
+                <p className='text-2xl font-bold text-orange-600'>
+                  {new Set(books.map((book) => book.published_year)).size}
+                </p>
               </div>
               <div className='w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center'>
-                <Filter className='w-6 h-6 text-orange-600' />
+                <Calendar className='w-6 h-6 text-orange-600' />
               </div>
             </div>
           </div>
@@ -246,84 +257,90 @@ function Books() {
         </div>
 
         {/* Books Grid */}
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-          {filteredBooks.map((book) => (
-            <div
-              key={book.book_id}
-              className='bg-white/80 backdrop-blur-sm rounded-xl border border-border/50 shadow-sm hover:shadow-md transition-shadow'
-            >
-              <div className='p-6'>
-                <div className='flex items-start justify-between mb-4'>
-                  <div className='flex-1'>
-                    <h3 className='font-semibold text-lg text-foreground mb-1 line-clamp-2'>
-                      {book.title}
-                    </h3>
-                    <p className='text-muted-foreground text-sm mb-2'>
-                      by {book.author}
-                    </p>
-                  </div>
-                  <div className='relative'>
+        {loading ? (
+          <div className='flex justify-center items-center py-12'>
+            <Loader2 className='w-8 h-8 animate-spin text-gray-500' />
+          </div>
+        ) : (
+          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+            {filteredBooks.map((book) => (
+              <div
+                key={book.book_id}
+                className='bg-white/80 backdrop-blur-sm rounded-xl border border-border/50 shadow-sm hover:shadow-md transition-shadow'
+              >
+                <div className='p-6'>
+                  <div className='flex items-start justify-between mb-4'>
+                    <div className='flex-1'>
+                      <h3 className='font-semibold text-lg text-foreground mb-1 line-clamp-2'>
+                        {book.title}
+                      </h3>
+                      <p className='text-muted-foreground text-sm mb-2'>
+                        by {book.author}
+                      </p>
+                    </div>
+                    {/* <div className='relative'>
                     <button className='p-2 hover:bg-muted rounded-lg transition-colors'>
                       <MoreVertical className='w-4 h-4 text-muted-foreground' />
                     </button>
+                  </div> */}
                   </div>
-                </div>
 
-                <div className='space-y-3 mb-6'>
-                  <div className='flex items-center text-sm text-muted-foreground'>
-                    <Calendar className='w-4 h-4 mr-2' />
-                    Published: {book.published_year}
+                  <div className='space-y-3 mb-6'>
+                    <div className='flex items-center text-sm text-muted-foreground'>
+                      <Calendar className='w-4 h-4 mr-2' />
+                      Published: {book.published_year}
+                    </div>
+                    <div className='flex items-center text-sm text-muted-foreground'>
+                      <Hash className='w-4 h-4 mr-2' />
+                      ISBN: {book.isbn}
+                    </div>
+                    <div className='flex items-center justify-between'>
+                      <span className='text-sm text-muted-foreground'>
+                        Available Copies
+                      </span>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          book.copies_available > 5
+                            ? 'bg-green-100 text-green-700'
+                            : book.copies_available > 0
+                            ? 'bg-yellow-100 text-yellow-700'
+                            : 'bg-red-100 text-red-700'
+                        }`}
+                      >
+                        {book.copies_available}
+                      </span>
+                    </div>
                   </div>
-                  <div className='flex items-center text-sm text-muted-foreground'>
-                    <Hash className='w-4 h-4 mr-2' />
-                    ISBN: {book.isbn}
-                  </div>
-                  <div className='flex items-center justify-between'>
-                    <span className='text-sm text-muted-foreground'>
-                      Available Copies
-                    </span>
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        book.copies_available > 5
-                          ? 'bg-green-100 text-green-700'
-                          : book.copies_available > 0
-                          ? 'bg-yellow-100 text-yellow-700'
-                          : 'bg-red-100 text-red-700'
-                      }`}
+
+                  <div className='flex gap-2'>
+                    <button
+                      onClick={() => handleEdit(book)}
+                      className='flex-1 inline-flex items-center justify-center px-3 py-2 border border-border rounded-lg hover:bg-muted transition-colors text-sm font-medium'
                     >
-                      {book.copies_available}
-                    </span>
+                      <Edit3 className='w-4 h-4 mr-2' />
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => {
+                        if (
+                          window.confirm(
+                            'Are you sure you want to delete this book?'
+                          )
+                        ) {
+                          handleDelete(book.book_id);
+                        }
+                      }}
+                      className='flex-1 inline-flex items-center justify-center px-3 py-2 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 transition-colors text-sm font-medium'
+                    >
+                      <Trash2 className='w-4 h-4 mr-2' />
+                      Delete
+                    </button>
                   </div>
-                </div>
-
-                <div className='flex gap-2'>
-                  <button
-                    onClick={() => handleEdit(book)}
-                    className='flex-1 inline-flex items-center justify-center px-3 py-2 border border-border rounded-lg hover:bg-muted transition-colors text-sm font-medium'
-                  >
-                    <Edit3 className='w-4 h-4 mr-2' />
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => {
-                      if (
-                        window.confirm(
-                          'Are you sure you want to delete this book?'
-                        )
-                      ) {
-                        handleDelete(book.book_id);
-                      }
-                    }}
-                    className='flex-1 inline-flex items-center justify-center px-3 py-2 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 transition-colors text-sm font-medium'
-                  >
-                    <Trash2 className='w-4 h-4 mr-2' />
-                    Delete
-                  </button>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         {filteredBooks.length === 0 && (
           <div className='text-center py-12'>

@@ -33,9 +33,11 @@ import {
 } from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
 import API_BASE_URL from '@/api';
+import { Loader2 } from 'lucide-react';
 
 function Users() {
   const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(null);
@@ -50,11 +52,18 @@ function Users() {
   }, []);
 
   const fetchUsers = async () => {
+    setLoading(true);
     const token = localStorage.getItem('token');
-    const data = await fetch(`${API_BASE_URL}/users`, {
-      headers: { Authorization: `Bearer ${token}` },
-    }).then((res) => res.json());
-    setUsers(data);
+    try {
+      const data = await fetch(`${API_BASE_URL}/users`, {
+        headers: { Authorization: `Bearer ${token}` },
+      }).then((res) => res.json());
+      setUsers(data);
+    } catch (error) {
+      toast.error('Failed to load users.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleAddUser = async () => {
@@ -119,7 +128,7 @@ function Users() {
     <div>
       <h1 className='text-2xl font-bold mb-4'>Users</h1>
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogTrigger asChild>
+        {/* <DialogTrigger asChild>
           <Button
             className='mb-4'
             onClick={() => {
@@ -129,7 +138,7 @@ function Users() {
           >
             Add User
           </Button>
-        </DialogTrigger>
+        </DialogTrigger> */}
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
@@ -171,55 +180,63 @@ function Users() {
           </div>
         </DialogContent>
       </Dialog>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>ID</TableHead>
-            <TableHead>Name</TableHead>
-            <TableHead>Email</TableHead>
-            <TableHead>Role</TableHead>
-            <TableHead>Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {users.map((user) => (
-            <TableRow key={user.user_id}>
-              <TableCell>{user.user_id}</TableCell>
-              <TableCell>{user.full_name}</TableCell>
-              <TableCell>{user.email}</TableCell>
-              <TableCell>{user.role}</TableCell>
-              <TableCell>
-                <Button variant='outline' onClick={() => handleEdit(user)}>
-                  Edit
-                </Button>
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button variant='destructive' className='ml-2'>
-                      Delete
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        This action cannot be undone.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={() => handleDelete(user.user_id)}
-                      >
-                        Delete
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </TableCell>
+      {loading ? (
+        <div className='flex justify-center items-center py-8'>
+          <Loader2 className='w-8 h-8 animate-spin text-gray-500' />
+        </div>
+      ) : users.length === 0 ? (
+        <p className='text-center text-gray-500 py-8'>No users found</p>
+      ) : (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>ID</TableHead>
+              <TableHead>Name</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead>Role</TableHead>
+              <TableHead>Actions</TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {users.map((user) => (
+              <TableRow key={user.user_id}>
+                <TableCell>{user.user_id}</TableCell>
+                <TableCell>{user.full_name}</TableCell>
+                <TableCell>{user.email}</TableCell>
+                <TableCell>{user.role}</TableCell>
+                <TableCell>
+                  <Button variant='outline' onClick={() => handleEdit(user)}>
+                    Edit
+                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant='destructive' className='ml-2'>
+                        Delete
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This action cannot be undone.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => handleDelete(user.user_id)}
+                        >
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      )}
     </div>
   );
 }
