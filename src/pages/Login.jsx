@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -47,6 +48,8 @@ function Login() {
   //   if (token) navigate('/');
   // }, [navigate]);
 
+  // ... existing code ...
+
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
@@ -56,26 +59,45 @@ function Login() {
       const payload = isRegister
         ? { ...formData, role: 'librarian' }
         : formData;
+
       const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-      const data = await res.json();
+      const responseText = await res.text();
+      let data;
+      try {
+        data = JSON.parse(responseText);
+      } catch (e) {
+        toast.error(responseText); // Shows the exact text error, e.g., "User not found"
+        setIsLoading(false);
+        return;
+      }
       if (data.token) {
         localStorage.setItem('token', data.token);
         const userRes = await fetch(`${API_BASE_URL}/users/me`, {
           headers: { Authorization: `Bearer ${data.token}` },
         });
         if (userRes.ok) {
-          const user = await userRes.json();
+          const userText = await userRes.text();
+          let user;
+          try {
+            user = JSON.parse(userText);
+          } catch (e) {
+            toast.error(userText);
+            localStorage.removeItem('token');
+            setIsLoading(false);
+            return;
+          }
           localStorage.setItem('user', JSON.stringify(user));
           setFormData({ full_name: '', email: '', password: '', role: '' });
           setIsRegister(true);
           toast.success('Login successful!');
           navigate('/');
         } else {
-          toast.error('Failed to fetch user data. Please try again.');
+          const errorText = await userRes.text();
+          toast.error(errorText);
           localStorage.removeItem('token');
         }
       } else if (data.message) {
@@ -85,7 +107,7 @@ function Login() {
       }
     } catch (error) {
       console.error('Authentication error:', error);
-      toast.error('An error occurred. Please try again.');
+      toast.error(`An error occurred: ${error.message}`);
     } finally {
       setIsLoading(false);
     }
@@ -96,7 +118,6 @@ function Login() {
     toast.success('Logout successful!');
     navigate('/login');
   };
-
 
   return (
     <div className='min-h-screen bg-gradient-to-br from-slate-50 to-blue-50'>
