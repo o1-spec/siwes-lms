@@ -94,7 +94,8 @@ function Login() {
           setFormData({ full_name: '', email: '', password: '', role: '' });
           setIsRegister(true);
           toast.success('Login successful!');
-          navigate('/');
+          
+          window.location.href = '/';
         } else {
           const errorText = await userRes.text();
           toast.error(errorText);

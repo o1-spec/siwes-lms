@@ -18,13 +18,14 @@ import API_BASE_URL from './api';
 import { useEffect, useState } from 'react';
 
 function App() {
-  const token = localStorage.getItem('token');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const token = localStorage.getItem('token');
     if (token) {
-      fetch(`${API_BASE_URL}/users`, {
+      // Validate token by fetching user data
+      fetch(`${API_BASE_URL}/users/me`, {
         headers: { Authorization: `Bearer ${token}` },
       })
         .then((res) => {
@@ -43,12 +44,11 @@ function App() {
     } else {
       setLoading(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (loading) {
     return (
-      <div className='flex items-center justify-center h-64'>
+      <div className='flex items-center justify-center h-screen'>
         <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-black'></div>
       </div>
     );
@@ -57,10 +57,9 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path='/login' element={<Login />} />
         {isAuthenticated ? (
           <>
-            <Route path='/login' element={<Navigate to='/' />} />
+            <Route path='/login' element={<Navigate to='/' replace />} />
             <Route
               path='/'
               element={
@@ -114,7 +113,7 @@ function App() {
         ) : (
           <>
             <Route path='/login' element={<Login />} />
-            <Route path='*' element={<Navigate to='/login' />} />
+            <Route path='*' element={<Navigate to='/login' replace />} />
           </>
         )}
       </Routes>
